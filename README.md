@@ -12,4 +12,6 @@
 # TODO
 
 - [ ] 部署在 Nginx 里面
-- 
+- [ ] publish
+
+    `git clone -b public git@github.com:yfsoftcom/blogs-of-blog.yunplus.io.git blog.yunplus.io`

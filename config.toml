@@ -1,10 +1,10 @@
-baseURL = "http://example.org/"
+baseURL = "http://blog.yunplus.io/"
 languageCode = "en-us"
 title = "Wang3"
 
 theme = "hyde"
 
-googleAnalytics = "FPM Core Funder"
+googleAnalytics = "UA-153851706-1"
 
 [params]
     themeColor = "theme-base-0d"
