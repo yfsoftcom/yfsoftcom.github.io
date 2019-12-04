@@ -1,0 +1,18 @@
+baseURL = "http://example.org/"
+languageCode = "en-us"
+title = "Wang3"
+
+theme = "hyde"
+
+googleAnalytics = "FPM Core Funder"
+
+[params]
+    themeColor = "theme-base-0d"
+    description = "A Blog For Wang3"
+
+[Menus]
+    main = [
+        {Name = "Tags", URL="/tags/"},
+        {Name = "Categories", URL="/categories/"},
+        {Name = "Github", URL = "https://github.com/yfsoftcom/"}
+  ]
