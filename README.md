@@ -4,9 +4,13 @@
 
 - clone the theme
 
-  `git clone https://github.com/spf13/hyde.git themes/`
+  `git clone https://github.com/spf13/hyde.git themes/hyde`
 
 - hugo
+
+  `$ hugo server -D`
+
+  `$ hugo -D`
 
 
 # TODO
