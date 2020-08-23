@@ -12,6 +12,21 @@
 
   `$ hugo -D`
 
+- run with docker
+
+```sh
+# Run build
+docker run --rm -it \
+  -v $(pwd):/src \
+  klakegg/hugo:0.74.3
+  
+# Run server
+docker run --rm -it \
+  -v $(pwd):/src \
+  -p 1313:1313 \
+  klakegg/hugo:0.74.3 \
+  server
+```
 
 # TODO
 
