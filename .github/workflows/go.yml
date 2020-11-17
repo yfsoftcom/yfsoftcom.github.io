@@ -35,6 +35,7 @@ jobs:
     - name: Deploy
       uses: peaceiris/actions-gh-pages@v2.5.1
       env:
+        ACTIONS_DEPLOY_KEY: ${{ secrets.ACTIONS_DEPLOY_KEY }}
         EXTERNAL_REPOSITORY: yfsoftcom/yfsoftcom.github.io
         PUBLISH_BRANCH: public
         PUBLISH_DIR: ./public
