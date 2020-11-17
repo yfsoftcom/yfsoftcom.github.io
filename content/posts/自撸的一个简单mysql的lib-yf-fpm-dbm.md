@@ -14,7 +14,7 @@ date: 2017-02-20 18:05:00
 
 为了省事，不想引入太多的npm包来实现一个简单的小应用，要足够自由，直接通过json来定义数据就可以实现数据库的操作。
 如果你和我一样追求简单的快乐，欢迎前来拍砖；奉上gayhub地址: [https://github.com/team4yf/yf-fpm-dbm](https://github.com/team4yf/yf-fpm-dbm)。
-
+<!--more-->
 ### 1. 特性
 
 - 只使用了2个依赖 ['lodash', 'mysql']

@@ -6,6 +6,7 @@ tags: [HTML5,Range]
 
 > Range控件是HTML5中新增的控件，很常用，尤其是手机端。
 
+<!--more-->
 #### 如何使用？
 ```html
 <!-- HTML Code -->

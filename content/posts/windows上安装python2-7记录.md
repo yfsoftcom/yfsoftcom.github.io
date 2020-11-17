@@ -9,8 +9,7 @@ categories:
 date: 2017-03-11 10:45:00
 ---
 本人不是专业搞python的，写这个只为做个记录；高手请自动略过。
-
----
+<!--more-->
 ## 因为爬虫 所以python
 最近需要折腾一个爬虫，之前试过用nodejs，折腾了好久，分别用到了
 - 1.jsdom + xpath 通过fetch下载页面，然后进行dom解析，通过xpath来获取数据
@@ -37,4 +36,4 @@ pip is already installed if you're using Python 2 >=2.7.9 or Python 3 >=3.4 bina
 然后运行命令 `python get-pip.py` 安装.
 
 运行 ` pip -V ` 看到下面的信息就OK了
-![pip -V](http://olk3bzfd5.bkt.clouddn.com/pasted-1489201547724.png)
+![pip -V](/snaps/pasted-1489201547724.png)

@@ -10,7 +10,7 @@ date: 2017-02-18 08:55:00
 ## Base Hexo-Admin
 
 This is an hexo plugin based on [HEXO-ADMIN](https://github.com/jaredly/hexo-admin) .
-
+<!--more-->
 ## Hexo Version
 
 For 2.x, use version `0.3.0` of this plugin. Version `1.x` and beyond only
@@ -24,9 +24,9 @@ support Hexo v3.x.
 
 # Screenshots
 
-![login](http://olk3bzfd5.bkt.clouddn.com/pasted-1487403495592.png)
+![login](/snaps/pasted-1487403495592.png)
 
-![edit](http://olk3bzfd5.bkt.clouddn.com/pasted-1487403530943.png)
+![edit](/snaps/pasted-1487403530943.png)
 
 # Quickstart
 ### 1. Setup hexo & create a blog
@@ -87,11 +87,11 @@ of a new post.
 
 Get Your Qiniu Keys:
 
-![upload successful](http://olk3bzfd5.bkt.clouddn.com/pasted-1487403384624.png)
+![upload successful](/snaps/pasted-1487403384624.png)
 
 Get Your Qiniu Test Domain And Bucket:
 
-![upload successful](http://olk3bzfd5.bkt.clouddn.com/pasted-1487403438509.png)
+![upload successful](/snaps/pasted-1487403438509.png)
 To Support Qiniu, add the qiniu variable to your hexo
 `_config.yml`:
 ```
