@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>nodejs on Wang3</title><link>https://blog.yunplus.io/tags/nodejs/</link><description>Recent content in nodejs on Wang3</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Wed, 01 Mar 2017 19:29:00 +0000</lastBuildDate><atom:link href="https://blog.yunplus.io/tags/nodejs/index.xml" rel="self" type="application/rss+xml"/><item><title>[YF-FPM-SERVER] BETA版更新细节</title><link>https://blog.yunplus.io/posts/yf-fpm-server-beta%E7%89%88%E6%9B%B4%E6%96%B0%E7%BB%86%E8%8A%82/</link><pubDate>Wed, 01 Mar 2017 19:29:00 +0000</pubDate><guid>https://blog.yunplus.io/posts/yf-fpm-server-beta%E7%89%88%E6%9B%B4%E6%96%B0%E7%BB%86%E8%8A%82/</guid><description>&lt;h4 id="0-什么是yf-fpm-server">0. 什么是yf-fpm-server&lt;/h4>
+&lt;blockquote>
+&lt;p>yf-fpm-server是一款轻量级的api服务端，可通过插件集成数据库(mysql,mongodb)的数据操作，灵活扩展自定义业务逻辑&lt;/p>
+&lt;/blockquote>
+&lt;ul>
+&lt;li>源码地址: &lt;a href="https://github.com/team4yf/yf-fpm-server.git">https://github.com/team4yf/yf-fpm-server.git&lt;/a>&lt;/li>
+&lt;li>基于koa2框架&lt;/li>
+&lt;li>支持key + secret安全验证&lt;/li>
+&lt;li>支持接口权限验证&lt;/li>
+&lt;li>支持hook钩子扩展&lt;/li>
+&lt;li>支持接口多版本同时在线&lt;/li>
+&lt;/ul></description></item><item><title>如何实现一个简单的插件扩展</title><link>https://blog.yunplus.io/posts/%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0%E4%B8%80%E4%B8%AA%E7%AE%80%E5%8D%95%E7%9A%84%E6%8F%92%E4%BB%B6%E6%89%A9%E5%B1%95/</link><pubDate>Tue, 21 Feb 2017 20:04:00 +0000</pubDate><guid>https://blog.yunplus.io/posts/%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0%E4%B8%80%E4%B8%AA%E7%AE%80%E5%8D%95%E7%9A%84%E6%8F%92%E4%BB%B6%E6%89%A9%E5%B1%95/</guid><description>&lt;h3 id="为什么需要插件扩展">为什么需要插件扩展？&lt;/h3>
+&lt;p>任何一个易用的系统都强调易用，易维护，模块化是nodejs的核心思想（显然并不是nodejs首先提出的）；nodejs有很多优秀的package都支持插件式开发：hexo(非常流行的静态博客生成工具),egg(ali团队推出的企业级开发框架),etc&amp;hellip;&lt;/p></description></item><item><title>自撸的一个简单mysql的lib[yf-fpm-dbm]</title><link>https://blog.yunplus.io/posts/%E8%87%AA%E6%92%B8%E7%9A%84%E4%B8%80%E4%B8%AA%E7%AE%80%E5%8D%95mysql%E7%9A%84lib-yf-fpm-dbm/</link><pubDate>Mon, 20 Feb 2017 18:05:00 +0000</pubDate><guid>https://blog.yunplus.io/posts/%E8%87%AA%E6%92%B8%E7%9A%84%E4%B8%80%E4%B8%AA%E7%AE%80%E5%8D%95mysql%E7%9A%84lib-yf-fpm-dbm/</guid><description>&lt;h3 id="0-起因">0. 起因&lt;/h3>
+&lt;p>为了省事，不想引入太多的npm包来实现一个简单的小应用，要足够自由，直接通过json来定义数据就可以实现数据库的操作。
+如果你和我一样追求简单的快乐，欢迎前来拍砖；奉上gayhub地址: &lt;a href="https://github.com/team4yf/yf-fpm-dbm">https://github.com/team4yf/yf-fpm-dbm&lt;/a>。&lt;/p></description></item></channel></rss>

@@ -1,0 +1,58 @@
+<!doctype html><html xmlns=http://www.w3.org/1999/xhtml xml:lang=en-us lang=en-us><head><link href=https://gmpg.org/xfn/11 rel=profile><meta charset=utf-8><meta name=generator content="Hugo 0.78.2"><meta name=viewport content="width=device-width,initial-scale=1"><title>[YF-FPM-SERVER] 2.2.2版更新细节 &#183; Wang3</title><meta name=description content><link type=text/css rel=stylesheet href=https://blog.yunplus.io/css/print.css media=print><link type=text/css rel=stylesheet href=https://blog.yunplus.io/css/poole.css><link type=text/css rel=stylesheet href=https://blog.yunplus.io/css/syntax.css><link type=text/css rel=stylesheet href=https://blog.yunplus.io/css/hyde.css><link rel=stylesheet href="https://fonts.googleapis.com/css?family=Abril+Fatface|PT+Sans:400,400i,700"><link rel=apple-touch-icon-precomposed sizes=144x144 href=/apple-touch-icon-144-precomposed.png><link rel="shortcut icon" href=/favicon.png><meta name=baidu-site-verification content="hukmWhOg1i"><script>var _hmt=_hmt||[];(function(){var hm=document.createElement("script");hm.src="https://hm.baidu.com/hm.js?bb3408a776ca96ae2966f50b4f152271";var s=document.getElementsByTagName("script")[0];s.parentNode.insertBefore(hm,s);})();</script></head><body class=theme-base-0d><aside class=sidebar><div class="container sidebar-sticky"><div class=sidebar-about><a href=https://blog.yunplus.io/><h1>Wang3</h1></a><p class=lead>A Blog For Wang3</p></div><nav><ul class=sidebar-nav><li><a href=https://blog.yunplus.io/>Home</a></li><li><a href=/categories/>Categories</a></li><li><a href=https://github.com/yfsoftcom/>Github</a></li><li><a href=/tags/>Tags</a></li><li><a href=/source/>推荐资源整理</a></li></ul></nav><p>&copy; 2020. All rights reserved.</p></div></aside><main class="content container"><div class=post><h1>[YF-FPM-SERVER] 2.2.2版更新细节</h1><time datetime=2017-03-31T22:44:00Z class=post-date>Fri, Mar 31, 2017</time><blockquote><p>本次版本更新主要针对文件上传下载进行了初步的实现。</p></blockquote><h4 id=增加的依赖>增加的依赖</h4><ul><li><code>koa-multer</code><ul><li><a href=https://www.npmjs.com/package/koa-multer>https://www.npmjs.com/package/koa-multer</a></li></ul></li></ul><h4 id=新的特性>新的特性</h4><ul><li>添加新的 <code>/upload</code> , <code>/download/:hash</code> 路由</li><li>限制文件类型<ul><li>zip</li><li>json</li><li>txt,log等文本类型</li></ul></li><li>限制文件大小<ul><li>2 x 1024 x 1024 (B)</li></ul></li></ul><h4 id=完整代码>完整代码</h4><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-javascript data-lang=javascript><span style=color:#66d9ef>import</span> <span style=color:#a6e22e>_</span> <span style=color:#a6e22e>from</span> <span style=color:#e6db74>&#39;lodash&#39;</span>
+<span style=color:#66d9ef>import</span> <span style=color:#a6e22e>Router</span> <span style=color:#a6e22e>from</span> <span style=color:#e6db74>&#39;koa-router&#39;</span>
+<span style=color:#66d9ef>import</span> <span style=color:#a6e22e>multer</span> <span style=color:#a6e22e>from</span> <span style=color:#e6db74>&#39;koa-multer&#39;</span>
+<span style=color:#66d9ef>import</span> <span style=color:#a6e22e>fs</span> <span style=color:#a6e22e>from</span> <span style=color:#e6db74>&#39;fs&#39;</span>
+<span style=color:#66d9ef>import</span> <span style=color:#a6e22e>E</span> <span style=color:#a6e22e>from</span> <span style=color:#e6db74>&#39;../error.js&#39;</span>
+
+<span style=color:#66d9ef>const</span> <span style=color:#a6e22e>router</span> <span style=color:#f92672>=</span> <span style=color:#a6e22e>Router</span>()
+
+<span style=color:#75715e>//将上传的信息保存在内存中
+</span><span style=color:#75715e></span><span style=color:#66d9ef>var</span> <span style=color:#a6e22e>datas</span> <span style=color:#f92672>=</span> {}
+
+<span style=color:#75715e>// 上传的文件类型限制
+</span><span style=color:#75715e></span><span style=color:#66d9ef>const</span> <span style=color:#a6e22e>ALLOW_MIMETYPES</span> <span style=color:#f92672>=</span> [<span style=color:#e6db74>&#39;application/octet-stream&#39;</span>, <span style=color:#e6db74>&#39;application/zip&#39;</span>, <span style=color:#e6db74>&#39;application/x-zip-compressed&#39;</span>]
+
+<span style=color:#66d9ef>const</span> <span style=color:#a6e22e>fileFilter</span> <span style=color:#f92672>=</span> (<span style=color:#a6e22e>req</span>, <span style=color:#a6e22e>file</span>, <span style=color:#a6e22e>cb</span>) =&gt;{
+  <span style=color:#66d9ef>if</span>(<span style=color:#a6e22e>_</span>.<span style=color:#a6e22e>indexOf</span>(<span style=color:#a6e22e>ALLOW_MIMETYPES</span>, <span style=color:#a6e22e>file</span>.<span style=color:#a6e22e>mimetype</span>)<span style=color:#f92672>&gt;</span> <span style=color:#f92672>-</span><span style=color:#ae81ff>1</span>){
+    <span style=color:#a6e22e>cb</span>(<span style=color:#66d9ef>null</span>, <span style=color:#ae81ff>1</span>)
+  }<span style=color:#66d9ef>else</span>{
+    <span style=color:#a6e22e>cb</span>(<span style=color:#a6e22e>E</span>.<span style=color:#a6e22e>Upload</span>.<span style=color:#a6e22e>TYPE_NOT_ALLOWD</span>)
+  }
+}
+
+<span style=color:#66d9ef>const</span> <span style=color:#a6e22e>upload</span> <span style=color:#f92672>=</span> <span style=color:#a6e22e>multer</span>({ <span style=color:#a6e22e>dest</span><span style=color:#f92672>:</span> <span style=color:#e6db74>&#39;uploads/&#39;</span> , <span style=color:#a6e22e>fileFilter</span><span style=color:#f92672>:</span> <span style=color:#a6e22e>fileFilter</span>, <span style=color:#a6e22e>limits</span><span style=color:#f92672>:</span> { <span style=color:#a6e22e>fileSize</span><span style=color:#f92672>:</span> <span style=color:#ae81ff>2</span> <span style=color:#f92672>*</span> <span style=color:#ae81ff>1024</span> <span style=color:#f92672>*</span> <span style=color:#ae81ff>1024</span> }})
+
+<span style=color:#75715e>// 上传表单以file为文件的字段
+</span><span style=color:#75715e></span><span style=color:#66d9ef>const</span> <span style=color:#a6e22e>defaultHandler</span> <span style=color:#f92672>=</span> <span style=color:#a6e22e>upload</span>.<span style=color:#a6e22e>single</span>(<span style=color:#e6db74>&#39;file&#39;</span>)
+
+<span style=color:#75715e>// 捕获异常
+</span><span style=color:#75715e></span><span style=color:#66d9ef>const</span> <span style=color:#a6e22e>handler</span> <span style=color:#f92672>=</span> <span style=color:#66d9ef>async</span> (<span style=color:#a6e22e>ctx</span>, <span style=color:#a6e22e>next</span>) =&gt; {
+  <span style=color:#66d9ef>try</span>{
+    <span style=color:#66d9ef>await</span> <span style=color:#a6e22e>defaultHandler</span>(<span style=color:#a6e22e>ctx</span>, <span style=color:#a6e22e>next</span>)
+  }<span style=color:#66d9ef>catch</span>(<span style=color:#a6e22e>e</span>){
+    <span style=color:#a6e22e>ctx</span>.<span style=color:#a6e22e>error</span> <span style=color:#f92672>=</span> <span style=color:#a6e22e>e</span>
+  }
+  <span style=color:#66d9ef>if</span>(<span style=color:#a6e22e>ctx</span>.<span style=color:#a6e22e>error</span>){
+    <span style=color:#a6e22e>ctx</span>.<span style=color:#a6e22e>fail</span>(<span style=color:#a6e22e>ctx</span>.<span style=color:#a6e22e>error</span>)
+  }<span style=color:#66d9ef>else</span>{
+    <span style=color:#66d9ef>let</span> <span style=color:#a6e22e>data</span> <span style=color:#f92672>=</span> <span style=color:#a6e22e>ctx</span>.<span style=color:#a6e22e>req</span>.<span style=color:#a6e22e>file</span>
+    <span style=color:#a6e22e>datas</span>[<span style=color:#a6e22e>data</span>.<span style=color:#a6e22e>filename</span>] <span style=color:#f92672>=</span> <span style=color:#a6e22e>data</span>
+    <span style=color:#a6e22e>ctx</span>.<span style=color:#a6e22e>success</span>({<span style=color:#a6e22e>data</span><span style=color:#f92672>:</span> {<span style=color:#a6e22e>hash</span><span style=color:#f92672>:</span> <span style=color:#a6e22e>data</span>.<span style=color:#a6e22e>filename</span>, <span style=color:#a6e22e>url</span><span style=color:#f92672>:</span> <span style=color:#e6db74>&#39;/download/&#39;</span> <span style=color:#f92672>+</span> <span style=color:#a6e22e>data</span>.<span style=color:#a6e22e>filename</span>}})
+  }
+}
+
+<span style=color:#75715e>// 上传文件的路由
+</span><span style=color:#75715e></span><span style=color:#a6e22e>router</span>.<span style=color:#a6e22e>post</span>(<span style=color:#e6db74>&#39;/upload&#39;</span>, <span style=color:#a6e22e>handler</span>)
+
+<span style=color:#75715e>// 下载文件的路由
+</span><span style=color:#75715e></span><span style=color:#a6e22e>router</span>.<span style=color:#a6e22e>get</span>(<span style=color:#e6db74>&#39;/download/:id&#39;</span>, <span style=color:#66d9ef>async</span> (<span style=color:#a6e22e>ctx</span>, <span style=color:#a6e22e>next</span>) =&gt; {
+  <span style=color:#66d9ef>let</span> <span style=color:#a6e22e>data</span> <span style=color:#f92672>=</span> <span style=color:#a6e22e>datas</span>[<span style=color:#a6e22e>ctx</span>.<span style=color:#a6e22e>params</span>.<span style=color:#a6e22e>id</span>]
+  <span style=color:#a6e22e>ctx</span>.<span style=color:#a6e22e>type</span> <span style=color:#f92672>=</span> <span style=color:#a6e22e>data</span>.<span style=color:#a6e22e>mimetype</span>
+  <span style=color:#a6e22e>ctx</span>.<span style=color:#a6e22e>attachment</span>(<span style=color:#a6e22e>data</span>.<span style=color:#a6e22e>originalname</span>)
+  <span style=color:#a6e22e>ctx</span>.<span style=color:#a6e22e>body</span> <span style=color:#f92672>=</span> <span style=color:#66d9ef>await</span> <span style=color:#a6e22e>fs</span>.<span style=color:#a6e22e>createReadStream</span>(<span style=color:#a6e22e>data</span>.<span style=color:#a6e22e>path</span>)
+  <span style=color:#66d9ef>await</span> <span style=color:#a6e22e>next</span>()
+})
+
+<span style=color:#66d9ef>export</span> <span style=color:#66d9ef>default</span> <span style=color:#a6e22e>router</span>
+
+</code></pre></div></div></main><script type=application/javascript>var doNotTrack=false;if(!doNotTrack){window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;ga('create','UA-153851706-1','auto');ga('send','pageview');}</script><script async src=https://www.google-analytics.com/analytics.js></script></body></html>

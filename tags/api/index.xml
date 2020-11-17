@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>api on Wang3</title><link>https://blog.yunplus.io/tags/api/</link><description>Recent content in api on Wang3</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Wed, 19 Apr 2017 09:24:00 +0000</lastBuildDate><atom:link href="https://blog.yunplus.io/tags/api/index.xml" rel="self" type="application/rss+xml"/><item><title>[YF-FPM-SERVER] 2.2.3版更新细节</title><link>https://blog.yunplus.io/posts/yf-fpm-server-2-2-3%E7%89%88%E6%9B%B4%E6%96%B0%E7%BB%86%E8%8A%82/</link><pubDate>Wed, 19 Apr 2017 09:24:00 +0000</pubDate><guid>https://blog.yunplus.io/posts/yf-fpm-server-2-2-3%E7%89%88%E6%9B%B4%E6%96%B0%E7%BB%86%E8%8A%82/</guid><description>&lt;blockquote>
+&lt;p>本次更新主要是移除了一些内核中可插件化的代码，并新增了2个插件 &lt;code>fpm-plugin-qiniu-upload&lt;/code>,&lt;code>fpm-plugin-socketio&lt;/code> 。2.2.3版本将是一个lts版本。&lt;/p>
+&lt;/blockquote></description></item><item><title>[YF-FPM-SERVER] 2.2.1版更新细节</title><link>https://blog.yunplus.io/posts/yf-fpm-server-2-2-1%E7%89%88%E6%9B%B4%E6%96%B0%E7%BB%86%E8%8A%82/</link><pubDate>Sun, 05 Mar 2017 12:31:00 +0000</pubDate><guid>https://blog.yunplus.io/posts/yf-fpm-server-2-2-1%E7%89%88%E6%9B%B4%E6%96%B0%E7%BB%86%E8%8A%82/</guid><description>&lt;ul>
+&lt;li>1.合并analyse.js 和 auth.js代码&lt;/li>
+&lt;li>2.增强权限匹配的模式&lt;/li>
+&lt;li>3.添加系统异常捕捉绑定函数&lt;/li>
+&lt;li>4.去除2个多余的函数&lt;/li>
+&lt;li>5.新增2个钩子埋入点&lt;/li>
+&lt;/ul></description></item><item><title>[YF-FPM-SERVER] 核心api</title><link>https://blog.yunplus.io/posts/yf-fpm-server-%E6%A0%B8%E5%BF%83api/</link><pubDate>Wed, 01 Mar 2017 20:31:00 +0000</pubDate><guid>https://blog.yunplus.io/posts/yf-fpm-server-%E6%A0%B8%E5%BF%83api/</guid><description>&lt;blockquote>
+&lt;p>本文简单罗列 &lt;code>yf-fpm-server&lt;/code> 的核心api .&lt;/p>
+&lt;/blockquote></description></item></channel></rss>

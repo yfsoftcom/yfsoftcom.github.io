@@ -1,0 +1,36 @@
+<!doctype html><html xmlns=http://www.w3.org/1999/xhtml xml:lang=en-us lang=en-us><head><link href=https://gmpg.org/xfn/11 rel=profile><meta charset=utf-8><meta name=generator content="Hugo 0.78.2"><meta name=viewport content="width=device-width,initial-scale=1"><title>Hexo-Admin-YF的优化 &#183; Wang3</title><meta name=description content><link type=text/css rel=stylesheet href=https://blog.yunplus.io/css/print.css media=print><link type=text/css rel=stylesheet href=https://blog.yunplus.io/css/poole.css><link type=text/css rel=stylesheet href=https://blog.yunplus.io/css/syntax.css><link type=text/css rel=stylesheet href=https://blog.yunplus.io/css/hyde.css><link rel=stylesheet href="https://fonts.googleapis.com/css?family=Abril+Fatface|PT+Sans:400,400i,700"><link rel=apple-touch-icon-precomposed sizes=144x144 href=/apple-touch-icon-144-precomposed.png><link rel="shortcut icon" href=/favicon.png><meta name=baidu-site-verification content="hukmWhOg1i"><script>var _hmt=_hmt||[];(function(){var hm=document.createElement("script");hm.src="https://hm.baidu.com/hm.js?bb3408a776ca96ae2966f50b4f152271";var s=document.getElementsByTagName("script")[0];s.parentNode.insertBefore(hm,s);})();</script></head><body class=theme-base-0d><aside class=sidebar><div class="container sidebar-sticky"><div class=sidebar-about><a href=https://blog.yunplus.io/><h1>Wang3</h1></a><p class=lead>A Blog For Wang3</p></div><nav><ul class=sidebar-nav><li><a href=https://blog.yunplus.io/>Home</a></li><li><a href=/categories/>Categories</a></li><li><a href=https://github.com/yfsoftcom/>Github</a></li><li><a href=/tags/>Tags</a></li><li><a href=/source/>推荐资源整理</a></li></ul></nav><p>&copy; 2020. All rights reserved.</p></div></aside><main class="content container"><div class=post><h1>Hexo-Admin-YF的优化</h1><time datetime=2017-02-18T08:55:00Z class=post-date>Sat, Feb 18, 2017</time><h2 id=base-hexo-admin>Base Hexo-Admin</h2><p>This is an hexo plugin based on <a href=https://github.com/jaredly/hexo-admin>HEXO-ADMIN</a> .</p><h2 id=hexo-version>Hexo Version</h2><p>For 2.x, use version <code>0.3.0</code> of this plugin. Version <code>1.x</code> and beyond only
+support Hexo v3.x.</p><h3 id=contents>Contents</h3><ul><li><a href=#screenshots><strong>Screenshots</strong></a></li><li><a href=#qiniu><strong>Qiniu Support</strong></a></li><li><a href=#quickstart><strong>Quickstart</strong></a></li><li><a href=#credits><strong>Credits</strong></a></li></ul><h1 id=screenshots>Screenshots</h1><p><img src=/snaps/pasted-1487403495592.png alt=login></p><p><img src=/snaps/pasted-1487403530943.png alt=edit></p><h1 id=quickstart>Quickstart</h1><h3 id=1-setup-hexo--create-a-blog>1. Setup hexo & create a blog</h3><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-sh data-lang=sh>npm install -g hexo
+cd ~/
+hexo init my-blog
+cd my-blog
+npm install
+</code></pre></div><h3 id=2-install-the-admin--start-things-up>2. Install the admin & start things up</h3><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-sh data-lang=sh>npm install --save hexo-admin-yf
+hexo server -d
+open http://localhost:4000/admin/
+</code></pre></div><h3 id=3-password-protection>3. Password protection</h3><p>If you&rsquo;re using Hexo admin on your live server, you want some password
+protection. To enable this, you just add a few config variables to your hexo
+<code>_config.yml</code>:</p><pre><code>admin:
+  username: myfavoritename
+  password_hash: be121740bf988b2225a313fa1f107ca1
+  secret: a secret something
+</code></pre><p>The <code>password_hash</code> is the bcrypt hash of your password. The <code>secret</code> is used
+to make the cookies secure, so it&rsquo;s a good idea to have it be long and
+complicated.</p><p>A utility in Hexo admin&rsquo;s Settings can hash your password and generate the <code>admin</code>
+section for you. Start Hexo and go to <code>Settings > Setup authentification</code>
+and fill out your information. Copy the generated YAML into your <code>_config.yml</code>.</p><p>Once that&rsquo;s in place, start up your hexo server and going to <code>/admin/</code> will
+require you to enter your password.</p><h3 id=4-custom-post-metadata>4. Custom post metadata</h3><p>To add and edit your own post metadata with the admin interface, add the
+metadata variable and your custom variables to your hexo <code>_config.yml</code>:</p><pre><code>metadata:
+  author_id: defaultAuthorId
+  language:
+</code></pre><p>You can provide default values that will be used to initialize the metadata
+of a new post.</p><h3 id=5-contribute>5. Contribute!</h3><ul><li>let me know how it can be improved in the <a href=https://github.com/yfsoftcom/hexo-admin-yf/issues>github
+issues</a></li><li><a href=https://github.com/yfsoftcom/hexo-admin-yf>fork</a> and pull-request</li></ul><h1 id=qiniu-support>Qiniu Support!</h1><p>Get Your Qiniu Keys:</p><p><img src=/snaps/pasted-1487403384624.png alt="upload successful"></p><p>Get Your Qiniu Test Domain And Bucket:</p><p><img src=/snaps/pasted-1487403438509.png alt="upload successful">
+To Support Qiniu, add the qiniu variable to your hexo
+<code>_config.yml</code>:</p><pre><code>qiniu:
+  bucket: [your qiniu bucket key here]
+  domain: [your qiniu outlink domain here]
+  ACCESS_KEY: [your qiniu access key here]
+  SECRET_KEY: [your qiniu secret key here]
+</code></pre><h1 id=credits>Credits</h1><p>built with ❤ by <a href=http://blog.yfsoft.biz>Wang Fan</a>
+(<a href=http://blog.yunplus.io>@yunplus.io</a>) using
+<a href=http://facebook.github.io/react>react</a>, <a href=http://browserify.org>browserify</a>, and <a href=http://lesscss.org>less</a>.</p></div></main><script type=application/javascript>var doNotTrack=false;if(!doNotTrack){window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;ga('create','UA-153851706-1','auto');ga('send','pageview');}</script><script async src=https://www.google-analytics.com/analytics.js></script></body></html>

@@ -1,0 +1,64 @@
+<!doctype html><html xmlns=http://www.w3.org/1999/xhtml xml:lang=en-us lang=en-us><head><link href=https://gmpg.org/xfn/11 rel=profile><meta charset=utf-8><meta name=generator content="Hugo 0.78.2"><meta name=viewport content="width=device-width,initial-scale=1"><title>Use Selenium In Python &#183; Wang3</title><meta name=description content><link type=text/css rel=stylesheet href=https://blog.yunplus.io/css/print.css media=print><link type=text/css rel=stylesheet href=https://blog.yunplus.io/css/poole.css><link type=text/css rel=stylesheet href=https://blog.yunplus.io/css/syntax.css><link type=text/css rel=stylesheet href=https://blog.yunplus.io/css/hyde.css><link rel=stylesheet href="https://fonts.googleapis.com/css?family=Abril+Fatface|PT+Sans:400,400i,700"><link rel=apple-touch-icon-precomposed sizes=144x144 href=/apple-touch-icon-144-precomposed.png><link rel="shortcut icon" href=/favicon.png><meta name=baidu-site-verification content="hukmWhOg1i"><script>var _hmt=_hmt||[];(function(){var hm=document.createElement("script");hm.src="https://hm.baidu.com/hm.js?bb3408a776ca96ae2966f50b4f152271";var s=document.getElementsByTagName("script")[0];s.parentNode.insertBefore(hm,s);})();</script></head><body class=theme-base-0d><aside class=sidebar><div class="container sidebar-sticky"><div class=sidebar-about><a href=https://blog.yunplus.io/><h1>Wang3</h1></a><p class=lead>A Blog For Wang3</p></div><nav><ul class=sidebar-nav><li><a href=https://blog.yunplus.io/>Home</a></li><li><a href=/categories/>Categories</a></li><li><a href=https://github.com/yfsoftcom/>Github</a></li><li><a href=/tags/>Tags</a></li><li><a href=/source/>推荐资源整理</a></li></ul></nav><p>&copy; 2020. All rights reserved.</p></div></aside><main class="content container"><div class=post><h1>Use Selenium In Python</h1><time datetime=2018-07-09T09:16:00Z class=post-date>Mon, Jul 9, 2018</time><p>本文中主要分享一些关于 Windows 环境下使用 Selenium 来操作 IE11 的一些细节和问题。</p><h2 id=selenium-for-python>Selenium For Python</h2><h4 id=1-如何使用-ie>1. 如何使用 IE</h4><ul><li>1.1 下载对应版本的 <code>webdriver.exe</code>
+这里指的对应的版本指的是 浏览器的软件版本 64/86。如果版本不对，会导致 sendKeys 函数执行效率很慢。</li><li>1.2 将 <code>webdriver.exe</code> 放在 windows 的 <code>PATH</code> 中</li><li>1.3 设置 IE11 的安全策略，全部保持一致，全部信任或者不信任</li><li>1.4 一些遇到的问题<ul><li>1.4.1 一些没有证书的 https 站点，会提示 <code>继续前往</code> ，可以通过模拟点击A标签来绕过错误提示</li><li>1.4.2 第一次操作的时候，IE11 的安全策略会弹出添加到信任站点，否则弹框会导致一些未知问题</li></ul></li></ul><h4 id=2-如何重复使用已开启的浏览器回话>2. 如何重复使用已开启的浏览器回话？</h4><p><em>这是本文的重点之一</em>。</p><ul><li><p>2.1 关于 chrome 的会话保持</p><h5 id=实现思路>实现思路：</h5><ul><li>i. 打开一个 selenium 会生成一个 <code>sessionid</code> , 只要将该id保存下来，下次继续使用这个id就可以重新使用 。</li><li>ii. 通过 <code>driver.session_id</code> 可以获取到当前回话的 <code>sessionid</code> 。</li><li>iii. 将这个 <code>sessionid</code> 赋值给新的 driver 实例，或许可以重连到上一次的会话。</li></ul><h5 id=编码目标>编码目标：</h5><ul><li><p>i. 继承 <code>Remote</code> 类，并复写 <code>start_session</code> 函数，阻止生成新的 session_id</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=color:#75715e># -*- coding: utf-8 -*-</span>
+<span style=color:#f92672>from</span> selenium.webdriver <span style=color:#f92672>import</span> Remote
+<span style=color:#f92672>from</span> selenium.webdriver.chrome <span style=color:#f92672>import</span> options
+<span style=color:#f92672>from</span> selenium.common.exceptions <span style=color:#f92672>import</span> InvalidArgumentException
+
+<span style=color:#66d9ef>class</span> <span style=color:#a6e22e>ReuseChrome</span>(Remote):
+
+    <span style=color:#66d9ef>def</span> __init__(self, command_executor, session_id):
+        self<span style=color:#f92672>.</span>r_session_id <span style=color:#f92672>=</span> session_id
+        Remote<span style=color:#f92672>.</span>__init__(self, command_executor<span style=color:#f92672>=</span>command_executor, desired_capabilities<span style=color:#f92672>=</span>{})
+
+    <span style=color:#66d9ef>def</span> <span style=color:#a6e22e>start_session</span>(self, capabilities, browser_profile<span style=color:#f92672>=</span>None):
+        <span style=color:#e6db74>&#34;&#34;&#34;
+</span><span style=color:#e6db74>        重写start_session方法
+</span><span style=color:#e6db74>        &#34;&#34;&#34;</span>
+        <span style=color:#66d9ef>if</span> <span style=color:#f92672>not</span> isinstance(capabilities, dict):
+            <span style=color:#66d9ef>raise</span> InvalidArgumentException(<span style=color:#e6db74>&#34;Capabilities must be a dictionary&#34;</span>)
+        <span style=color:#66d9ef>if</span> browser_profile:
+            <span style=color:#66d9ef>if</span> <span style=color:#e6db74>&#34;moz:firefoxOptions&#34;</span> <span style=color:#f92672>in</span> capabilities:
+                capabilities[<span style=color:#e6db74>&#34;moz:firefoxOptions&#34;</span>][<span style=color:#e6db74>&#34;profile&#34;</span>] <span style=color:#f92672>=</span> browser_profile<span style=color:#f92672>.</span>encoded
+            <span style=color:#66d9ef>else</span>:
+                capabilities<span style=color:#f92672>.</span>update({<span style=color:#e6db74>&#39;firefox_profile&#39;</span>: browser_profile<span style=color:#f92672>.</span>encoded})
+
+        self<span style=color:#f92672>.</span>capabilities <span style=color:#f92672>=</span> options<span style=color:#f92672>.</span>Options()<span style=color:#f92672>.</span>to_capabilities()
+        self<span style=color:#f92672>.</span>session_id <span style=color:#f92672>=</span> self<span style=color:#f92672>.</span>r_session_id
+        self<span style=color:#f92672>.</span>w3c <span style=color:#f92672>=</span> False
+</code></pre></div></li></ul></li><li><p>2.2 关于 ie 的会话保持
+实现了 Chrome 的 reuse， ie 的实现思路也是类似，只是 IEWebDriver 有些参数和 Remote 的有些不同；需要翻阅一些 selenium 的源码。思路都一样，就不重复说了，直接贴代码。</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=color:#75715e># -*- coding: utf-8 -*-</span>
+<span style=color:#f92672>from</span> selenium.webdriver.ie.webdriver <span style=color:#f92672>import</span> WebDriver <span style=color:#66d9ef>as</span> IEWebDriver
+<span style=color:#f92672>from</span> selenium.common.exceptions <span style=color:#f92672>import</span> InvalidArgumentException
+<span style=color:#f92672>from</span> selenium.webdriver.ie <span style=color:#f92672>import</span> options
+
+<span style=color:#66d9ef>class</span> <span style=color:#a6e22e>ReuseIe</span>(IEWebDriver):
+
+    <span style=color:#66d9ef>def</span> __init__(self, executable_path, port, session_id):
+        self<span style=color:#f92672>.</span>r_session_id <span style=color:#f92672>=</span> session_id
+        IEWebDriver<span style=color:#f92672>.</span>__init__(self, port<span style=color:#f92672>=</span>port, desired_capabilities<span style=color:#f92672>=</span>{})
+
+    <span style=color:#66d9ef>def</span> <span style=color:#a6e22e>start_session</span>(self, capabilities, browser_profile<span style=color:#f92672>=</span>None):
+        <span style=color:#e6db74>&#34;&#34;&#34;
+</span><span style=color:#e6db74>        重写start_session方法
+</span><span style=color:#e6db74>        &#34;&#34;&#34;</span>
+        <span style=color:#66d9ef>if</span> <span style=color:#f92672>not</span> isinstance(capabilities, dict):
+            <span style=color:#66d9ef>raise</span> InvalidArgumentException(<span style=color:#e6db74>&#34;Capabilities must be a dictionary&#34;</span>)
+        <span style=color:#66d9ef>if</span> browser_profile:
+            <span style=color:#66d9ef>if</span> <span style=color:#e6db74>&#34;moz:firefoxOptions&#34;</span> <span style=color:#f92672>in</span> capabilities:
+                capabilities[<span style=color:#e6db74>&#34;moz:firefoxOptions&#34;</span>][<span style=color:#e6db74>&#34;profile&#34;</span>] <span style=color:#f92672>=</span> browser_profile<span style=color:#f92672>.</span>encoded
+            <span style=color:#66d9ef>else</span>:
+                capabilities<span style=color:#f92672>.</span>update({<span style=color:#e6db74>&#39;firefox_profile&#39;</span>: browser_profile<span style=color:#f92672>.</span>encoded})
+
+        self<span style=color:#f92672>.</span>capabilities <span style=color:#f92672>=</span> options<span style=color:#f92672>.</span>Options()<span style=color:#f92672>.</span>to_capabilities()
+        self<span style=color:#f92672>.</span>session_id <span style=color:#f92672>=</span> self<span style=color:#f92672>.</span>r_session_id
+        self<span style=color:#f92672>.</span>w3c <span style=color:#f92672>=</span> True
+</code></pre></div></li></ul><hr><h4 id=3-如何等待一些异步执行的js执行完立即执行>3. 如何等待一些异步执行的js执行完立即执行？</h4><p><em>这是本文的另一个重点</em>。</p><h5 id=实际使用的过程中会遇到异步执行的js代码执行下一步操作需要等待这个js执行完>实际使用的过程中，会遇到异步执行的js代码，执行下一步操作需要等待这个js执行完。</h5><p>在不了解 selenium 的一些特性之前，会想到 <code>time.sleep(?)</code> ，这样确实可以让操作等待；且等待的时间是固定的，无法与dom或者js真正的交互；为了安全只能尽量设置得大一些，这样也白白浪费了时间。
+selenium 为我们提供了一些非常友好的 api 来解决这个问题。</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python>WebDriverWait(_driver, seconds)<span style=color:#f92672>.</span>until(EC<span style=color:#f92672>.</span>element_to_be_clickable((By<span style=color:#f92672>.</span>ID, id)))
+</code></pre></div><p>意思就是：等待若干秒直到某个元素可被点击，则立即返回该元素，超时则抛出相应的异常。
+通过这个api可以确保异步或者网络延迟导致dom结构变化的时间在一个范围内，脚本可以按照设计的流程执行下去，并且不消耗多余的等待时间。
+使用前，需要导入它们</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=color:#f92672>from</span> selenium.webdriver.support.ui <span style=color:#f92672>import</span> WebDriverWait
+<span style=color:#f92672>from</span> selenium.webdriver.support <span style=color:#f92672>import</span> expected_conditions <span style=color:#66d9ef>as</span> EC
+</code></pre></div><p>更多的相关api可以安装了 selenium 之后在 site-package 中找到它的源代码。</p><h4 id=4-如何确保dom被完全渲染出来了>4. 如何确保dom被完全渲染出来了？</h4><p>判断dom有没有正常的显示可以使用：</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python>_driver<span style=color:#f92672>.</span>find_element_by_id(id)<span style=color:#f92672>.</span>is_displayed()
+</code></pre></div><p>当然这是立即判断，没有等待。
+想要等待某个元素显示好了再执行，则需要</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python>WebDriverWait(_driver, seconds)<span style=color:#f92672>.</span>until(EC<span style=color:#f92672>.</span>visibility_of_element_located((By<span style=color:#f92672>.</span>ID, id)))
+</code></pre></div><p>同样也是用到了 <code>expected_conditions</code> 库中的api。</p><h4 id=5-如何执行单元测试>5. 如何执行单元测试</h4><p>想要测试 selenium 的脚本，需要先编写一个 html 页面，提供一些dom元素：<code>button</code>，<code>input</code>，<code>alert</code> 等等，然后通过脚本去控制它们；再使用 python 的 <code>unittest</code> 框架的断言库去测试它们。</p><h4 id=6-bug-使用之前的浏览器回话操作-iframe-时会无法在父子框架之间进行正常的切换>6. Bug: 使用之前的浏览器回话，操作 iframe 时会无法在父子框架之间进行正常的切换</h4><p>如果在一个 frame 中，脚本异常退出，重连之后，无法再次获取到该frame，这个问题暂时没有解决。</p></div></main><script type=application/javascript>var doNotTrack=false;if(!doNotTrack){window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;ga('create','UA-153851706-1','auto');ga('send','pageview');}</script><script async src=https://www.google-analytics.com/analytics.js></script></body></html>
