@@ -26,7 +26,10 @@ jobs:
       with:
         hugo-version: '0.78.2'
         # extended: true
-
+    - name: copy theme
+      uses: ./
+      run: git clone https://github.com/spf13/hyde.git themes/hyde
+      
     - name: Build
       run: hugo --minify
 
