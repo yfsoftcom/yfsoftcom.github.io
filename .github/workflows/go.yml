@@ -24,8 +24,15 @@ jobs:
     - name: Setup Hugo
       uses: peaceiris/actions-hugo@v2
       with:
-        hugo-version: '0.62.2'
+        hugo-version: '0.78.2'
         # extended: true
 
     - name: Build
       run: hugo --minify
+
+    - name: Deploy
+      uses: peaceiris/actions-gh-pages@v2.5.1
+      env:
+        EXTERNAL_REPOSITORY: yfsoftcom/yfsoftcom.github.io
+        PUBLISH_BRANCH: public
+        PUBLISH_DIR: ./public
