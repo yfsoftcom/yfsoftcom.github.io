@@ -1,69 +1,69 @@
-<!doctype html><html xmlns=http://www.w3.org/1999/xhtml xml:lang=en-us lang=en-us><head><link href=https://gmpg.org/xfn/11 rel=profile><meta charset=utf-8><meta name=generator content="Hugo 0.78.2"><meta name=viewport content="width=device-width,initial-scale=1"><title>Ionic1.x 小总结 &#183; Wang3</title><meta name=description content><link type=text/css rel=stylesheet href=https://blog.yunplus.io/css/print.css media=print><link type=text/css rel=stylesheet href=https://blog.yunplus.io/css/poole.css><link type=text/css rel=stylesheet href=https://blog.yunplus.io/css/syntax.css><link type=text/css rel=stylesheet href=https://blog.yunplus.io/css/hyde.css><link rel=stylesheet href="https://fonts.googleapis.com/css?family=Abril+Fatface|PT+Sans:400,400i,700"><link rel=apple-touch-icon-precomposed sizes=144x144 href=/apple-touch-icon-144-precomposed.png><link rel="shortcut icon" href=/favicon.png><meta name=baidu-site-verification content="hukmWhOg1i"><script>var _hmt=_hmt||[];(function(){var hm=document.createElement("script");hm.src="https://hm.baidu.com/hm.js?bb3408a776ca96ae2966f50b4f152271";var s=document.getElementsByTagName("script")[0];s.parentNode.insertBefore(hm,s);})();</script></head><body class=theme-base-0d><aside class=sidebar><div class="container sidebar-sticky"><div class=sidebar-about><a href=https://blog.yunplus.io/><h1>Wang3</h1></a><p class=lead>A Blog For Wang3</p></div><nav><ul class=sidebar-nav><li><a href=https://blog.yunplus.io/>Home</a></li><li><a href=/categories/>Categories</a></li><li><a href=https://github.com/yfsoftcom/>Github</a></li><li><a href=/tags/>Tags</a></li><li><a href=/source/>推荐资源整理</a></li></ul></nav><p>&copy; 2020. All rights reserved.</p></div></aside><main class="content container"><div class=post><h1>Ionic1.x 小总结</h1><time datetime=2017-03-22T09:21:00Z class=post-date>Wed, Mar 22, 2017</time><p>一些小牢骚：</p><blockquote><p>在这个前端框架非常丰富的时代，选择一个合适的框架来做产品或做项目是一个相对纠结的决定；毕竟这些作品都还在发展，很多人甚至还没来得及使用它们就已经不在或者淘汰了，甚至原创团队都不得不做很大的<code>break change</code>；用户在发展，需求在变化，前端这个新兴的产业很吸引人又很淘气；用<code>java</code>就会用到<code>spring</code>，这点已经毋庸置疑；而面对前段这么多的选择，似乎很难统一意见。</p></blockquote><hr><p>最近结束了一个小项目，今天做一个小总结：</p><h4 id=大致需求>大致需求</h4><p>这些基本就是客户的基本诉求；</p><ul><li><p>一个智能家居产品公司，有一些家庭电器的智能硬件，需要一款app来进行远程的控制能管理。</p></li><li><p>本身已经有一款<code>webapp</code>，使用体验一般，数据交互使用http(后端提供cgi)接口以json格式来传递数据。</p></li><li><p>为了升级体验，并集成更多如监控，语音等模块，需要对其进行封装嵌入到nativeapp中。</p></li></ul><h4 id=选择开发框架>选择开发框架</h4><p>app的结构就是：<code>native + web</code>；通常的<code>hybrid</code>就是native+web，之前工作中使用过<code>cordova</code>(那时候还是<code>phonegap</code>)，它本身只是一个web和native交互的框架，没有ui，要么自己实现，要么使用一些开源产品：<code>jqmobile，appframework，touch</code>等等；都有尝试过，在android的体验很不好，直到后来出现了<code>ionic</code>，这是一个相对企业产品级的框架，做产品的体验还不错；考虑到<code>cordova</code>是主web，次native的模式，于是我们决定采用<code>native + ionic - cordova</code> 的模式。</p><h4 id=ionic1x的基本认识>ionic1.x的基本认识</h4><blockquote><p>我一直在强调是 <em>ionic1.x</em> ，因为 ionic2 和 ionic1 基本不兼容，甚至不是同一个产品。</p></blockquote><h5 id=我觉得好的一些地方>我觉得好的一些地方</h5><ul><li><code>ionic</code>有一个很好的在线原型设计的产品，<a href=http://creator.ionic.io>creator.ionic.io</a>，它可以直接生成框架代码，这点很棒。前期可以很低的成本来沟通UI和基本交互。</li><li><code>ionic</code>的文档非常丰富，当然如果你有梯子，文档会更好一些，将就一些可以用 ionic.wang。</li><li>基于<code>angularjs1.x</code>的，这是一个很棒的产品，很全面，很强大，却不那么轻便和足够高效。ionic1.x是基于<code>angularjs</code>的指令模式，进行的ui封装，所以只要有angularjs的基础，可以轻松驾驭ionic。</li><li>测试框架很丰富，也是占了google的光了，angularjs就是<code>TDD</code>的模式开发出来的，有了很多好的比如：<code>karma，mocha</code>这样的开发框架</li></ul><h5 id=我觉得不好的一些地方>我觉得不好的一些地方</h5><ul><li>这是一个让web开发者可以做app的框架，所以很多逻辑，交互都是通过js来实现的，大量的代码在webview中运行，android上体验非常差，特别是需要用到listview和较多图片的时候。</li><li>想要些native的代码就需要用<code>cordova</code>插件来实现，这还是比较蛋疼的。</li><li><code>ionic</code>是个spa设计，就是单页应用，在一个wbeview中就加载了所有的页面和js，这样很难在android上进行调优了。</li></ul><h4 id=一些尝试>一些尝试</h4><ul><li>去掉<code>cordova</code>，也就是说，自己来实现一个基本的native和web的交互，这个其实不难；核心就是实现如何通过java来执行js和如何通过js执行java，下面是一些代码片段</li></ul><pre><code>//java调用js
-public class PreviewWebview extends WebView {
-  //...
-  
-  //这个方法可以执行到 webview中 javascript 代码中的公开可访问的函数
-  //比如 _mWebview.runJS(&quot;resetTimer();&quot;); 可以执行js的 window.resetTimer() 函数
-  public void runJS(String js){
-    this.loadUrl(&quot;javascript:&quot; + js);
-  }
-}
+<!doctype html><html xmlns=http://www.w3.org/1999/xhtml xml:lang=en-us lang=en-us><head><link href=https://gmpg.org/xfn/11 rel=profile><meta charset=utf-8><meta name=generator content="Hugo 0.78.2"><meta name=viewport content="width=device-width,initial-scale=1"><title>Ionic1.x 小总结 &#183; Wang3</title><meta name=description content><link type=text/css rel=stylesheet href=https://blog.yunplus.io/css/print.css media=print><link type=text/css rel=stylesheet href=https://blog.yunplus.io/css/poole.css><link type=text/css rel=stylesheet href=https://blog.yunplus.io/css/syntax.css><link type=text/css rel=stylesheet href=https://blog.yunplus.io/css/hyde.css><link rel=stylesheet href="https://fonts.googleapis.com/css?family=Abril+Fatface|PT+Sans:400,400i,700"><link rel=apple-touch-icon-precomposed sizes=144x144 href=/apple-touch-icon-144-precomposed.png><link rel="shortcut icon" href=/favicon.png><meta name=baidu-site-verification content="hukmWhOg1i"><script>var _hmt=_hmt||[];(function(){var hm=document.createElement("script");hm.src="https://hm.baidu.com/hm.js?bb3408a776ca96ae2966f50b4f152271";var s=document.getElementsByTagName("script")[0];s.parentNode.insertBefore(hm,s);})();</script></head><body class=theme-base-0d><aside class=sidebar><div class="container sidebar-sticky"><div class=sidebar-about><a href=https://blog.yunplus.io/><h1>Wang3</h1></a><p class=lead>A Blog For Wang3</p></div><nav><ul class=sidebar-nav><li><a href=https://blog.yunplus.io/>Home</a></li><li><a href=/categories/>Categories</a></li><li><a href=https://github.com/yfsoftcom/>Github</a></li><li><a href=/tags/>Tags</a></li><li><a href=/source/>推荐资源整理</a></li></ul></nav><p>&copy; 2020. All rights reserved.</p></div></aside><main class="content container"><div class=post><h1>Ionic1.x 小总结</h1><time datetime=2017-03-22T09:21:00Z class=post-date>Wed, Mar 22, 2017</time><p>一些小牢骚：</p><blockquote><p>在这个前端框架非常丰富的时代，选择一个合适的框架来做产品或做项目是一个相对纠结的决定；毕竟这些作品都还在发展，很多人甚至还没来得及使用它们就已经不在或者淘汰了，甚至原创团队都不得不做很大的<code>break change</code>；用户在发展，需求在变化，前端这个新兴的产业很吸引人又很淘气；用<code>java</code>就会用到<code>spring</code>，这点已经毋庸置疑；而面对前段这么多的选择，似乎很难统一意见。</p></blockquote><hr><p>最近结束了一个小项目，今天做一个小总结：</p><h4 id=大致需求>大致需求</h4><p>这些基本就是客户的基本诉求；</p><ul><li><p>一个智能家居产品公司，有一些家庭电器的智能硬件，需要一款app来进行远程的控制能管理。</p></li><li><p>本身已经有一款<code>webapp</code>，使用体验一般，数据交互使用http(后端提供cgi)接口以json格式来传递数据。</p></li><li><p>为了升级体验，并集成更多如监控，语音等模块，需要对其进行封装嵌入到nativeapp中。</p></li></ul><h4 id=选择开发框架>选择开发框架</h4><p>app的结构就是：<code>native + web</code>；通常的<code>hybrid</code>就是native+web，之前工作中使用过<code>cordova</code>(那时候还是<code>phonegap</code>)，它本身只是一个web和native交互的框架，没有ui，要么自己实现，要么使用一些开源产品：<code>jqmobile，appframework，touch</code>等等；都有尝试过，在android的体验很不好，直到后来出现了<code>ionic</code>，这是一个相对企业产品级的框架，做产品的体验还不错；考虑到<code>cordova</code>是主web，次native的模式，于是我们决定采用<code>native + ionic - cordova</code> 的模式。</p><h4 id=ionic1x的基本认识>ionic1.x的基本认识</h4><blockquote><p>我一直在强调是 <em>ionic1.x</em> ，因为 ionic2 和 ionic1 基本不兼容，甚至不是同一个产品。</p></blockquote><h5 id=我觉得好的一些地方>我觉得好的一些地方</h5><ul><li><code>ionic</code>有一个很好的在线原型设计的产品，<a href=http://creator.ionic.io>creator.ionic.io</a>，它可以直接生成框架代码，这点很棒。前期可以很低的成本来沟通UI和基本交互。</li><li><code>ionic</code>的文档非常丰富，当然如果你有梯子，文档会更好一些，将就一些可以用 ionic.wang。</li><li>基于<code>angularjs1.x</code>的，这是一个很棒的产品，很全面，很强大，却不那么轻便和足够高效。ionic1.x是基于<code>angularjs</code>的指令模式，进行的ui封装，所以只要有angularjs的基础，可以轻松驾驭ionic。</li><li>测试框架很丰富，也是占了google的光了，angularjs就是<code>TDD</code>的模式开发出来的，有了很多好的比如：<code>karma，mocha</code>这样的开发框架</li></ul><h5 id=我觉得不好的一些地方>我觉得不好的一些地方</h5><ul><li>这是一个让web开发者可以做app的框架，所以很多逻辑，交互都是通过js来实现的，大量的代码在webview中运行，android上体验非常差，特别是需要用到listview和较多图片的时候。</li><li>想要些native的代码就需要用<code>cordova</code>插件来实现，这还是比较蛋疼的。</li><li><code>ionic</code>是个spa设计，就是单页应用，在一个wbeview中就加载了所有的页面和js，这样很难在android上进行调优了。</li></ul><h4 id=一些尝试>一些尝试</h4><ul><li>去掉<code>cordova</code>，也就是说，自己来实现一个基本的native和web的交互，这个其实不难；核心就是实现如何通过java来执行js和如何通过js执行java，下面是一些代码片段</li></ul><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-java data-lang=java><span style=color:#75715e>//java调用js
+</span><span style=color:#75715e></span><span style=color:#66d9ef>public</span> <span style=color:#66d9ef>class</span> <span style=color:#a6e22e>PreviewWebview</span> <span style=color:#66d9ef>extends</span> WebView <span style=color:#f92672>{</span>
+  <span style=color:#75715e>//...
+</span><span style=color:#75715e></span>  
+  <span style=color:#75715e>//这个方法可以执行到 webview中 javascript 代码中的公开可访问的函数
+</span><span style=color:#75715e></span>  <span style=color:#75715e>//比如 _mWebview.runJS(&#34;resetTimer();&#34;); 可以执行js的 window.resetTimer() 函数
+</span><span style=color:#75715e></span>  <span style=color:#66d9ef>public</span> <span style=color:#66d9ef>void</span> <span style=color:#a6e22e>runJS</span><span style=color:#f92672>(</span>String js<span style=color:#f92672>){</span>
+    <span style=color:#66d9ef>this</span><span style=color:#f92672>.</span><span style=color:#a6e22e>loadUrl</span><span style=color:#f92672>(</span><span style=color:#e6db74>&#34;javascript:&#34;</span> <span style=color:#f92672>+</span> js<span style=color:#f92672>);</span>
+  <span style=color:#f92672>}</span>
+<span style=color:#f92672>}</span>
 
-</code></pre><pre><code>//js调用java
-public class WebviewActivity extends BaseActivity implements IWebAppView, ICheckVersionView{
-  @Override
-  protected void onCreate(@Nullable Bundle savedInstanceState) {
-    //这行代码，可以将this作为 window.FPM 注入到 javascript 上下文中
-    _mWebview.addJavascriptInterface(this, &quot;FPM&quot;);
-  }
+</code></pre></div><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-java data-lang=java><span style=color:#75715e>//js调用java
+</span><span style=color:#75715e></span><span style=color:#66d9ef>public</span> <span style=color:#66d9ef>class</span> <span style=color:#a6e22e>WebviewActivity</span> <span style=color:#66d9ef>extends</span> BaseActivity <span style=color:#66d9ef>implements</span> IWebAppView<span style=color:#f92672>,</span> ICheckVersionView<span style=color:#f92672>{</span>
+  <span style=color:#a6e22e>@Override</span>
+  <span style=color:#66d9ef>protected</span> <span style=color:#66d9ef>void</span> <span style=color:#a6e22e>onCreate</span><span style=color:#f92672>(</span><span style=color:#a6e22e>@Nullable</span> Bundle savedInstanceState<span style=color:#f92672>)</span> <span style=color:#f92672>{</span>
+    <span style=color:#75715e>//这行代码，可以将this作为 window.FPM 注入到 javascript 上下文中
+</span><span style=color:#75715e></span>    _mWebview<span style=color:#f92672>.</span><span style=color:#a6e22e>addJavascriptInterface</span><span style=color:#f92672>(</span><span style=color:#66d9ef>this</span><span style=color:#f92672>,</span> <span style=color:#e6db74>&#34;FPM&#34;</span><span style=color:#f92672>);</span>
+  <span style=color:#f92672>}</span>
   
-  // 而所有带有 JavascriptInterface 这个注解的方法都会暴露给javascript，可以直接调用
-  // 比如 window.FPM.jsLogout()就可以调用该方法
-  @JavascriptInterface
-  public void jsLogout(){
-    // code here
-  }
-}
-</code></pre><p>这里面有一个坑就是，通常我们认为 js 中的 <code>alert</code> 和 <code>confrim</code> 可以被正常执行，其实不是这样的，android中这些函数是不能正常执行的，需要我们自己去实现它，而<code>cordova</code>正是通过这个机制实现的native和web的交互，这里不再赘述。总之通常，还是不要在js中使用 <code>alert</code> 这些弹框来实现你的逻辑；会有意想不到的问题。</p><ul><li>充分的使用angularjs的指令和模块化；指令是angularjs中相对先进的思想，也是很多前端框架实现组件化的设计思路；这个在angularjs2.x中有了充分的证实。当然指令是angularjs中相对复杂的知识点。</li></ul><pre><code>// 这是一个隐藏底部菜单栏的指令
-app.directive('hideTabs', ['$rootScope', function($rootScope) {
-  return {
-    restrict:'AE',
-    link:function(scope, element, attributes){
-      scope.$on('$ionicView.beforeEnter', function (event, viewData) {
-        viewData.enableBack = true;
-        scope.$watch(attributes.hideTabs, function (value) {
-          $rootScope.hideTabs = true;
+  <span style=color:#75715e>// 而所有带有 JavascriptInterface 这个注解的方法都会暴露给javascript，可以直接调用
+</span><span style=color:#75715e></span>  <span style=color:#75715e>// 比如 window.FPM.jsLogout()就可以调用该方法
+</span><span style=color:#75715e></span>  <span style=color:#a6e22e>@JavascriptInterface</span>
+  <span style=color:#66d9ef>public</span> <span style=color:#66d9ef>void</span> <span style=color:#a6e22e>jsLogout</span><span style=color:#f92672>(){</span>
+    <span style=color:#75715e>// code here
+</span><span style=color:#75715e></span>  <span style=color:#f92672>}</span>
+<span style=color:#f92672>}</span>
+</code></pre></div><p>这里面有一个坑就是，通常我们认为 js 中的 <code>alert</code> 和 <code>confrim</code> 可以被正常执行，其实不是这样的，android中这些函数是不能正常执行的，需要我们自己去实现它，而<code>cordova</code>正是通过这个机制实现的native和web的交互，这里不再赘述。总之通常，还是不要在js中使用 <code>alert</code> 这些弹框来实现你的逻辑；会有意想不到的问题。</p><ul><li>充分的使用angularjs的指令和模块化；指令是angularjs中相对先进的思想，也是很多前端框架实现组件化的设计思路；这个在angularjs2.x中有了充分的证实。当然指令是angularjs中相对复杂的知识点。</li></ul><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-javascript data-lang=javascript><span style=color:#75715e>// 这是一个隐藏底部菜单栏的指令
+</span><span style=color:#75715e></span><span style=color:#a6e22e>app</span>.<span style=color:#a6e22e>directive</span>(<span style=color:#e6db74>&#39;hideTabs&#39;</span>, [<span style=color:#e6db74>&#39;$rootScope&#39;</span>, <span style=color:#66d9ef>function</span>(<span style=color:#a6e22e>$rootScope</span>) {
+  <span style=color:#66d9ef>return</span> {
+    <span style=color:#a6e22e>restrict</span><span style=color:#f92672>:</span><span style=color:#e6db74>&#39;AE&#39;</span>,
+    <span style=color:#a6e22e>link</span><span style=color:#f92672>:</span><span style=color:#66d9ef>function</span>(<span style=color:#a6e22e>scope</span>, <span style=color:#a6e22e>element</span>, <span style=color:#a6e22e>attributes</span>){
+      <span style=color:#a6e22e>scope</span>.<span style=color:#a6e22e>$on</span>(<span style=color:#e6db74>&#39;$ionicView.beforeEnter&#39;</span>, <span style=color:#66d9ef>function</span> (<span style=color:#a6e22e>event</span>, <span style=color:#a6e22e>viewData</span>) {
+        <span style=color:#a6e22e>viewData</span>.<span style=color:#a6e22e>enableBack</span> <span style=color:#f92672>=</span> <span style=color:#66d9ef>true</span>;
+        <span style=color:#a6e22e>scope</span>.<span style=color:#a6e22e>$watch</span>(<span style=color:#a6e22e>attributes</span>.<span style=color:#a6e22e>hideTabs</span>, <span style=color:#66d9ef>function</span> (<span style=color:#a6e22e>value</span>) {
+          <span style=color:#a6e22e>$rootScope</span>.<span style=color:#a6e22e>hideTabs</span> <span style=color:#f92672>=</span> <span style=color:#66d9ef>true</span>;
         });
       });
-      scope.$on('$ionicView.beforeLeave', function () {
-        $rootScope.hideTabs = false;
+      <span style=color:#a6e22e>scope</span>.<span style=color:#a6e22e>$on</span>(<span style=color:#e6db74>&#39;$ionicView.beforeLeave&#39;</span>, <span style=color:#66d9ef>function</span> () {
+        <span style=color:#a6e22e>$rootScope</span>.<span style=color:#a6e22e>hideTabs</span> <span style=color:#f92672>=</span> <span style=color:#66d9ef>false</span>;
       });
     }
   }
 }])
-</code></pre><ul><li>使用<code>websocket + promise</code>来做数据交互，针对这个，我单独写了一篇博客: <a href=http://blog.yunplus.io/%E5%B0%81%E8%A3%85Angularjs-Websocket%E5%B9%B6%E6%94%AF%E6%8C%81Promise/>封装ANGULARJS WEBSOCKET并支持PROMISE</a></li></ul><h4 id=一些小收获>一些小收获</h4><ul><li><code>rootScope</code> 是全局共享的，每一个<code>scope</code>都能使用它</li><li><code>angularjs</code> 的事件机制分为 <code>boardcast</code> 和 <code>emit</code> 两种，分别是向下分发和向上传递，有些类似于 dom 中的事件冒泡和事件捕获，使用时一定要注意</li><li>ionic中有很多事件可以使用：<code>$ionicView.enter</code> , <code>$ionicView.leave</code> 等等，可以用来做一些复杂的逻辑。</li><li>android和js交互是没有办法直接访问<code>$scope</code>中的函数的，需要一段代码来实现:</li></ul><pre><code>function goBack(){
-  //通过angular.element 来注入scope实现函数的访问
-  var appElement = document.querySelector('#app');
-  var $scope = angular.element(appElement).scope();
-  $scope.goBack();
+</code></pre></div><ul><li>使用<code>websocket + promise</code>来做数据交互，针对这个，我单独写了一篇博客: <a href=http://blog.yunplus.io/posts/%E5%B0%81%E8%A3%85Angularjs-Websocket%E5%B9%B6%E6%94%AF%E6%8C%81Promise/>封装ANGULARJS WEBSOCKET并支持PROMISE</a></li></ul><h4 id=一些小收获>一些小收获</h4><ul><li><code>rootScope</code> 是全局共享的，每一个<code>scope</code>都能使用它</li><li><code>angularjs</code> 的事件机制分为 <code>boardcast</code> 和 <code>emit</code> 两种，分别是向下分发和向上传递，有些类似于 dom 中的事件冒泡和事件捕获，使用时一定要注意</li><li>ionic中有很多事件可以使用：<code>$ionicView.enter</code> , <code>$ionicView.leave</code> 等等，可以用来做一些复杂的逻辑。</li><li>android和js交互是没有办法直接访问<code>$scope</code>中的函数的，需要一段代码来实现:</li></ul><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-javascript data-lang=javascript><span style=color:#66d9ef>function</span> <span style=color:#a6e22e>goBack</span>(){
+  <span style=color:#75715e>//通过angular.element 来注入scope实现函数的访问
+</span><span style=color:#75715e></span>  <span style=color:#66d9ef>var</span> <span style=color:#a6e22e>appElement</span> <span style=color:#f92672>=</span> document.<span style=color:#a6e22e>querySelector</span>(<span style=color:#e6db74>&#39;#app&#39;</span>);
+  <span style=color:#66d9ef>var</span> <span style=color:#a6e22e>$scope</span> <span style=color:#f92672>=</span> <span style=color:#a6e22e>angular</span>.<span style=color:#a6e22e>element</span>(<span style=color:#a6e22e>appElement</span>).<span style=color:#a6e22e>scope</span>();
+  <span style=color:#a6e22e>$scope</span>.<span style=color:#a6e22e>goBack</span>();
 }
-</code></pre><ul><li><code>ionic</code>在android上，tab默认在上面，可以通过设置来置于底部:</li></ul><pre><code>.config(['$ionicConfigProvider', '$sceDelegateProvider', function($ionicConfigProvider, $sceDelegateProvider){
-  $ionicConfigProvider.platform.android.tabs.position('bottom');
+</code></pre></div><ul><li><code>ionic</code>在android上，tab默认在上面，可以通过设置来置于底部:</li></ul><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-javascript data-lang=javascript>.<span style=color:#a6e22e>config</span>([<span style=color:#e6db74>&#39;$ionicConfigProvider&#39;</span>, <span style=color:#e6db74>&#39;$sceDelegateProvider&#39;</span>, <span style=color:#66d9ef>function</span>(<span style=color:#a6e22e>$ionicConfigProvider</span>, <span style=color:#a6e22e>$sceDelegateProvider</span>){
+  <span style=color:#a6e22e>$ionicConfigProvider</span>.<span style=color:#a6e22e>platform</span>.<span style=color:#a6e22e>android</span>.<span style=color:#a6e22e>tabs</span>.<span style=color:#a6e22e>position</span>(<span style=color:#e6db74>&#39;bottom&#39;</span>);
 }])
-</code></pre><ul><li>android对于webview有一些安全限制，需要通过代码来实现目地：</li></ul><pre><code>public class PreviewWebview extends WebView {
-  private void init(){
-    //为前端h5提供一些PC端的接口，如：启用js,file,cache,localstorage等等
-    WebSettings settings = getSettings();
-    settings.setJavaScriptEnabled(true);
-    settings.setDomStorageEnabled(true);
-    settings.setAllowFileAccess(true);
-    settings.setAllowUniversalAccessFromFileURLs(true);
-    settings.setDefaultTextEncodingName(&quot;UTF-8&quot;);
-    settings.setCacheMode(WebSettings.LOAD_NO_CACHE);
-    settings.setAppCacheEnabled(true);
-    settings.setDatabaseEnabled(true);
-    setWebViewClient(_mWebviewClient);
-    setWebChromeClient(_mChromeClient);
-  }
-}
-</code></pre><hr><p>主要还是不断的实践和总结，还是可以在<code>ionic</code>这款产品上学到很多的；不过介于这些总结，后面会开始尝试用 <code>React</code> 来做产品。</p><blockquote><p>生命不息，折腾不止</p></blockquote></div></main><script type=application/javascript>var doNotTrack=false;if(!doNotTrack){window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;ga('create','UA-153851706-1','auto');ga('send','pageview');}</script><script async src=https://www.google-analytics.com/analytics.js></script></body></html>
+</code></pre></div><ul><li>android对于webview有一些安全限制，需要通过代码来实现目地：</li></ul><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-java data-lang=java><span style=color:#66d9ef>public</span> <span style=color:#66d9ef>class</span> <span style=color:#a6e22e>PreviewWebview</span> <span style=color:#66d9ef>extends</span> WebView <span style=color:#f92672>{</span>
+  <span style=color:#66d9ef>private</span> <span style=color:#66d9ef>void</span> <span style=color:#a6e22e>init</span><span style=color:#f92672>(){</span>
+    <span style=color:#75715e>//为前端h5提供一些PC端的接口，如：启用js,file,cache,localstorage等等
+</span><span style=color:#75715e></span>    WebSettings settings <span style=color:#f92672>=</span> getSettings<span style=color:#f92672>();</span>
+    settings<span style=color:#f92672>.</span><span style=color:#a6e22e>setJavaScriptEnabled</span><span style=color:#f92672>(</span><span style=color:#66d9ef>true</span><span style=color:#f92672>);</span>
+    settings<span style=color:#f92672>.</span><span style=color:#a6e22e>setDomStorageEnabled</span><span style=color:#f92672>(</span><span style=color:#66d9ef>true</span><span style=color:#f92672>);</span>
+    settings<span style=color:#f92672>.</span><span style=color:#a6e22e>setAllowFileAccess</span><span style=color:#f92672>(</span><span style=color:#66d9ef>true</span><span style=color:#f92672>);</span>
+    settings<span style=color:#f92672>.</span><span style=color:#a6e22e>setAllowUniversalAccessFromFileURLs</span><span style=color:#f92672>(</span><span style=color:#66d9ef>true</span><span style=color:#f92672>);</span>
+    settings<span style=color:#f92672>.</span><span style=color:#a6e22e>setDefaultTextEncodingName</span><span style=color:#f92672>(</span><span style=color:#e6db74>&#34;UTF-8&#34;</span><span style=color:#f92672>);</span>
+    settings<span style=color:#f92672>.</span><span style=color:#a6e22e>setCacheMode</span><span style=color:#f92672>(</span>WebSettings<span style=color:#f92672>.</span><span style=color:#a6e22e>LOAD_NO_CACHE</span><span style=color:#f92672>);</span>
+    settings<span style=color:#f92672>.</span><span style=color:#a6e22e>setAppCacheEnabled</span><span style=color:#f92672>(</span><span style=color:#66d9ef>true</span><span style=color:#f92672>);</span>
+    settings<span style=color:#f92672>.</span><span style=color:#a6e22e>setDatabaseEnabled</span><span style=color:#f92672>(</span><span style=color:#66d9ef>true</span><span style=color:#f92672>);</span>
+    setWebViewClient<span style=color:#f92672>(</span>_mWebviewClient<span style=color:#f92672>);</span>
+    setWebChromeClient<span style=color:#f92672>(</span>_mChromeClient<span style=color:#f92672>);</span>
+  <span style=color:#f92672>}</span>
+<span style=color:#f92672>}</span>
+</code></pre></div><hr><p>主要还是不断的实践和总结，还是可以在<code>ionic</code>这款产品上学到很多的；不过介于这些总结，后面会开始尝试用 <code>React</code> 来做产品。</p><blockquote><p>生命不息，折腾不止</p></blockquote></div></main><script type=application/javascript>var doNotTrack=false;if(!doNotTrack){window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;ga('create','UA-153851706-1','auto');ga('send','pageview');}</script><script async src=https://www.google-analytics.com/analytics.js></script></body></html>
