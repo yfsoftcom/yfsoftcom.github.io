@@ -7,6 +7,7 @@ tags:
 categories:
   - python
 date: 2017-03-11 10:45:00
+draft: true
 ---
 本人不是专业搞python的，写这个只为做个记录；高手请自动略过。
 <!--more-->

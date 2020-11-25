@@ -8,6 +8,7 @@ tags:
 categories:
   - yf-fpm-server
 date: 2017-03-01 19:29:00
+draft: true
 ---
 #### 0. 什么是yf-fpm-server
 > yf-fpm-server是一款轻量级的api服务端，可通过插件集成数据库(mysql,mongodb)的数据操作，灵活扩展自定义业务逻辑

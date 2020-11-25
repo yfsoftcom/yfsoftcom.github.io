@@ -7,6 +7,7 @@ tags:
 categories:
   - yf-fpm-server
 date: 2017-04-19 09:24:00
+draft: true
 ---
 > 本次更新主要是移除了一些内核中可插件化的代码，并新增了2个插件 `fpm-plugin-qiniu-upload`,`fpm-plugin-socketio` 。2.2.3版本将是一个lts版本。
 <!--more-->

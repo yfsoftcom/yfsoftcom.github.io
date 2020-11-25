@@ -41,7 +41,7 @@ app的结构就是：`native + web`；通常的`hybrid`就是native+web，之前
 #### 一些尝试
 - 去掉`cordova`，也就是说，自己来实现一个基本的native和web的交互，这个其实不难；核心就是实现如何通过java来执行js和如何通过js执行java，下面是一些代码片段 
 
-```
+```java
 //java调用js
 public class PreviewWebview extends WebView {
   //...
@@ -54,7 +54,7 @@ public class PreviewWebview extends WebView {
 }
 
 ```
-```
+```java
 //js调用java
 public class WebviewActivity extends BaseActivity implements IWebAppView, ICheckVersionView{
   @Override
@@ -75,7 +75,7 @@ public class WebviewActivity extends BaseActivity implements IWebAppView, ICheck
 
 - 充分的使用angularjs的指令和模块化；指令是angularjs中相对先进的思想，也是很多前端框架实现组件化的设计思路；这个在angularjs2.x中有了充分的证实。当然指令是angularjs中相对复杂的知识点。
 
-```
+```javascript
 // 这是一个隐藏底部菜单栏的指令
 app.directive('hideTabs', ['$rootScope', function($rootScope) {
   return {
@@ -94,14 +94,14 @@ app.directive('hideTabs', ['$rootScope', function($rootScope) {
   }
 }])
 ```
-- 使用`websocket + promise`来做数据交互，针对这个，我单独写了一篇博客: [封装ANGULARJS WEBSOCKET并支持PROMISE](http://blog.yunplus.io/%E5%B0%81%E8%A3%85Angularjs-Websocket%E5%B9%B6%E6%94%AF%E6%8C%81Promise/)
+- 使用`websocket + promise`来做数据交互，针对这个，我单独写了一篇博客: [封装ANGULARJS WEBSOCKET并支持PROMISE](http://blog.yunplus.io/posts/%E5%B0%81%E8%A3%85Angularjs-Websocket%E5%B9%B6%E6%94%AF%E6%8C%81Promise/)
 
 #### 一些小收获
 - `rootScope` 是全局共享的，每一个`scope`都能使用它
 - `angularjs` 的事件机制分为 `boardcast` 和 `emit` 两种，分别是向下分发和向上传递，有些类似于 dom 中的事件冒泡和事件捕获，使用时一定要注意
 - ionic中有很多事件可以使用：`$ionicView.enter` , `$ionicView.leave` 等等，可以用来做一些复杂的逻辑。
 - android和js交互是没有办法直接访问`$scope`中的函数的，需要一段代码来实现:
-```
+```javascript
 function goBack(){
   //通过angular.element 来注入scope实现函数的访问
   var appElement = document.querySelector('#app');
@@ -110,13 +110,13 @@ function goBack(){
 }
 ```
 - `ionic`在android上，tab默认在上面，可以通过设置来置于底部:
-```
+```javascript
 .config(['$ionicConfigProvider', '$sceDelegateProvider', function($ionicConfigProvider, $sceDelegateProvider){
   $ionicConfigProvider.platform.android.tabs.position('bottom');
 }])
 ```
 - android对于webview有一些安全限制，需要通过代码来实现目地：
-```
+```java
 public class PreviewWebview extends WebView {
   private void init(){
     //为前端h5提供一些PC端的接口，如：启用js,file,cache,localstorage等等
