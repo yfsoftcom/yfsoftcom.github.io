@@ -94,7 +94,7 @@ app.directive('hideTabs', ['$rootScope', function($rootScope) {
   }
 }])
 ```
-- 使用`websocket + promise`来做数据交互，针对这个，我单独写了一篇博客: [封装ANGULARJS WEBSOCKET并支持PROMISE](http://blog.yunplus.io/posts/%E5%B0%81%E8%A3%85Angularjs-Websocket%E5%B9%B6%E6%94%AF%E6%8C%81Promise/)
+- 使用`websocket + promise`来做数据交互，针对这个，我单独写了一篇博客: [封装ANGULARJS WEBSOCKET并支持PROMISE](/posts/%E5%B0%81%E8%A3%85angularjs-websocket%E5%B9%B6%E6%94%AF%E6%8C%81promise/)
 
 #### 一些小收获
 - `rootScope` 是全局共享的，每一个`scope`都能使用它
