@@ -1,0 +1,183 @@
+<!doctype html><html xmlns=http://www.w3.org/1999/xhtml xml:lang=en-us lang=en-us><head><link href=https://gmpg.org/xfn/11 rel=profile><meta charset=utf-8><meta name=generator content="Hugo 0.78.2"><meta name=viewport content="width=device-width,initial-scale=1"><title>使用Python实现简单的单一神经元 &#183; Wang3</title><meta name=description content><link type=text/css rel=stylesheet href=https://blog.yunplus.io/css/print.css media=print><link type=text/css rel=stylesheet href=https://blog.yunplus.io/css/poole.css><link type=text/css rel=stylesheet href=https://blog.yunplus.io/css/syntax.css><link type=text/css rel=stylesheet href=https://blog.yunplus.io/css/hyde.css><link rel=stylesheet href="https://fonts.googleapis.com/css?family=Abril+Fatface|PT+Sans:400,400i,700"><link rel=apple-touch-icon-precomposed sizes=144x144 href=/apple-touch-icon-144-precomposed.png><link rel="shortcut icon" href=/favicon.png><meta name=google-site-verification content="TMkOXJMi2Hzjnf06eD_85orpkvedPBEb8iz3QoRAVWw"><meta name=baidu-site-verification content="hukmWhOg1i"><script>var _hmt=_hmt||[];(function(){var hm=document.createElement("script");hm.src="https://hm.baidu.com/hm.js?bb3408a776ca96ae2966f50b4f152271";var s=document.getElementsByTagName("script")[0];s.parentNode.insertBefore(hm,s);})();</script></head><body class=theme-base-0d><aside class=sidebar><div class="container sidebar-sticky"><div class=sidebar-about><a href=https://blog.yunplus.io/><h1>Wang3</h1></a><p class=lead>A Blog For Wang3</p></div><nav><ul class=sidebar-nav><li><a href=https://blog.yunplus.io/>Home</a></li><li><a href=/categories/>Categories</a></li><li><a href=https://github.com/yfsoftcom/>Github</a></li><li><a href=/tags/>Tags</a></li><li><a href=/source/>推荐资源整理</a></li></ul></nav><p>&copy; 2021. All rights reserved.</p></div></aside><main class="content container"><div class=post><h1>使用Python实现简单的单一神经元</h1><time datetime=2018-07-16T13:46:00Z class=post-date>Mon, Jul 16, 2018</time><blockquote><p>本文是一个笔记帖，是关于 [实现简单神经网络] 的视频课程中使用到的源码整理。视频地址: <a href=https://www.imooc.com/learn/813>https://www.imooc.com/learn/813</a>。</p></blockquote><h4 id=本文中提到一些基本概念与线性代数的关联>本文中提到一些基本概念与线性代数的关联</h4><p>文中提到了一些机器学习的相关知识，老师介绍的比较浅显易懂，这里记录一些自己的理解。</p><p>要深入理解这些概念需要有一定的线性代数的基础。</p><ul><li><p>神经元
+一个神经元就是整个神经网络中的一个节点，它允许接受一组信息，并将这些信息做一个简单的处理，并将处理结果反馈给下一个神经元。</p><p>这里接受的一组信息可以理解为一个n维的<code>列向量</code>，处理信息的过程就是将这个向量乘以神经元自身的一个列向量的过程，处理的结果会进行一个分类，将其处理为1或者-1 。</p></li><li><p>感知器
+感知器是一个具有自我学习能力的神经元，可以通过一组分类好的数据对其进行训练，使其具有处理信息，将其分类的功能。</p><p>这里分类好的数据可以理解为一个m*(n+1)维的<code>增广矩阵</code>，m表示数据集的量，n表示神经元单次处理的输入信息的维度，即输入的列向量的维度。
+而这个矩阵的一般解就是这个神经元的模型，即这个神经元的列向量。</p></li><li><p>简单分类算法
+该算法就是一个简单的数学模型；
+假设： 输入的向量信息为 <code>(10, 8, 7)</code>，我们需要神经元经过分类后得到 <code>1</code> ；
+那我们可以将这次处理用数据公式表示出来：
+<code>fn(10 * w1 + 8 * w2 + 7 * w3) = 1</code></p><p>而这里的 <code>(w1, w2, w3)</code> 正是我们需要知道的神经元的向量。</p><p>将这个转换成通常的公式:
+<code>fn(W0 + X1 * W1 + X2 * W2 + ... + Xn * Wn) = Y</code></p><p>这个公式表示了一次一般的神经元的向量运算。</p><p>神经元的训练过程就是将已知的若干个<code>(X1, X2, .... Xn, Y)</code>带入到该公式中进行运算，以求得 <code>(W0, W1, W2 ... Wn)</code> 。而这个向量就是神经元的模型，可以用于预测之后的输入信息。</p></li></ul><h4 id=延展的知识>延展的知识</h4><ul><li>矩阵的基本运算<ul><li>矩阵的转置</li><li>矩阵的点乘</li></ul></li></ul><p>具体的过程需要理解 线性代数 课程中的相应的数学逻辑，然后在翻阅一些 python 中 numpy 的api .</p><h4 id=完整代码>完整代码</h4><p>本文中的代码只实现了简单神经元的实现，未实现课程中后半部分的自适应性神经元的算法。除此之外添加了将训练好的神经元保存的逻辑。</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=color:#75715e># -*- coding: utf-8 -*-</span>
+<span style=color:#e6db74>&#34;&#34;&#34;
+</span><span style=color:#e6db74>实现一个神经元的分类算法
+</span><span style=color:#e6db74>https://www.imooc.com/learn/813
+</span><span style=color:#e6db74>&#34;&#34;&#34;</span>
+<span style=color:#f92672>import</span> numpy <span style=color:#f92672>as</span> np
+<span style=color:#f92672>import</span> pandas <span style=color:#f92672>as</span> pd
+<span style=color:#f92672>import</span> matplotlib.pyplot <span style=color:#f92672>as</span> plt
+<span style=color:#f92672>from</span> matplotlib.colors <span style=color:#f92672>import</span> ListedColormap
+<span style=color:#f92672>import</span> json<span style=color:#f92672>,</span> os<span style=color:#f92672>,</span> time
+
+<span style=color:#75715e>#分类器代码</span>
+<span style=color:#66d9ef>class</span> <span style=color:#a6e22e>Perceptron</span>(object):
+    <span style=color:#e6db74>&#34;&#34;&#34;
+</span><span style=color:#e6db74>    eta:学习率
+</span><span style=color:#e6db74>    n_iter:权重向量的训练次数
+</span><span style=color:#e6db74>    w_:神经分叉权重向量
+</span><span style=color:#e6db74>    errors_:用于记录神经元判断出错次数
+</span><span style=color:#e6db74>    &#34;&#34;&#34;</span>
+    <span style=color:#66d9ef>def</span> __init__(self, eta <span style=color:#f92672>=</span> <span style=color:#ae81ff>0.01</span>, n_iter <span style=color:#f92672>=</span> <span style=color:#ae81ff>10</span>):
+        self<span style=color:#f92672>.</span>eta <span style=color:#f92672>=</span> eta
+        self<span style=color:#f92672>.</span>n_iter <span style=color:#f92672>=</span> n_iter
+        <span style=color:#75715e># 是否训练过的标识</span>
+        self<span style=color:#f92672>.</span>_fited <span style=color:#f92672>=</span> self<span style=color:#f92672>.</span>load_model()
+        <span style=color:#e6db74>&#34;&#34;&#34;
+</span><span style=color:#e6db74>        初始化向量为0
+</span><span style=color:#e6db74>        加一是因为步调函数阈值
+</span><span style=color:#e6db74>        &#34;&#34;&#34;</span>
+        <span style=color:#66d9ef>if</span> <span style=color:#f92672>not</span> self<span style=color:#f92672>.</span>_fited:
+            self<span style=color:#f92672>.</span>w_ <span style=color:#f92672>=</span> np<span style=color:#f92672>.</span>zeros(<span style=color:#ae81ff>1</span> <span style=color:#f92672>+</span> X<span style=color:#f92672>.</span>shape[<span style=color:#ae81ff>1</span>])
+        
+    <span style=color:#66d9ef>def</span> <span style=color:#a6e22e>fit</span>(self, X, y):
+        <span style=color:#e6db74>&#34;&#34;&#34;
+</span><span style=color:#e6db74>        输入训练数据，培训神经元
+</span><span style=color:#e6db74>        :param X: 输入样本向量
+</span><span style=color:#e6db74>        :param y: 对应样本分类
+</span><span style=color:#e6db74>         
+</span><span style=color:#e6db74>        X:shape[n_samples, n_features]
+</span><span style=color:#e6db74>        X:[[1,2,3],[4,5,6]]
+</span><span style=color:#e6db74>        n_samples :2
+</span><span style=color:#e6db74>        n_features:3
+</span><span style=color:#e6db74>         
+</span><span style=color:#e6db74>        y:[1,-1]
+</span><span style=color:#e6db74>        &#34;&#34;&#34;</span>
+        self<span style=color:#f92672>.</span>errors_ <span style=color:#f92672>=</span> []
+ 
+        <span style=color:#66d9ef>for</span> _ <span style=color:#f92672>in</span> range(self<span style=color:#f92672>.</span>n_iter):
+            errors <span style=color:#f92672>=</span> <span style=color:#ae81ff>0</span>
+            <span style=color:#66d9ef>for</span> xi, target <span style=color:#f92672>in</span> zip(X,y):
+                update <span style=color:#f92672>=</span> self<span style=color:#f92672>.</span>eta <span style=color:#f92672>*</span> (target <span style=color:#f92672>-</span> self<span style=color:#f92672>.</span>predict(xi))
+ 
+                self<span style=color:#f92672>.</span>w_[<span style=color:#ae81ff>1</span>:] <span style=color:#f92672>+=</span> update <span style=color:#f92672>*</span> xi
+                self<span style=color:#f92672>.</span>w_[<span style=color:#ae81ff>0</span>] <span style=color:#f92672>+=</span> update
+ 
+                errors <span style=color:#f92672>+=</span> int(update<span style=color:#f92672>!=</span> <span style=color:#ae81ff>0</span>)
+                self<span style=color:#f92672>.</span>errors_<span style=color:#f92672>.</span>append(errors)
+
+        self<span style=color:#f92672>.</span>save_model()
+ 
+    <span style=color:#66d9ef>def</span> <span style=color:#a6e22e>net_input</span>(self, X):
+        <span style=color:#66d9ef>return</span> np<span style=color:#f92672>.</span>dot(X, self<span style=color:#f92672>.</span>w_[<span style=color:#ae81ff>1</span>:] <span style=color:#f92672>+</span> self<span style=color:#f92672>.</span>w_[<span style=color:#ae81ff>0</span>])
+        
+    <span style=color:#e6db74>&#34;&#34;&#34;
+</span><span style=color:#e6db74>    将输入信息进行分类
+</span><span style=color:#e6db74>    &#34;&#34;&#34;</span>
+    <span style=color:#66d9ef>def</span> <span style=color:#a6e22e>predict</span>(self, X):
+        <span style=color:#66d9ef>return</span> np<span style=color:#f92672>.</span>where(self<span style=color:#f92672>.</span>net_input(X) <span style=color:#f92672>&gt;=</span> <span style=color:#ae81ff>0.0</span>, <span style=color:#ae81ff>1</span>, <span style=color:#f92672>-</span><span style=color:#ae81ff>1</span>)
+
+    <span style=color:#66d9ef>def</span> <span style=color:#a6e22e>get_model</span>(self):
+        <span style=color:#66d9ef>return</span> self<span style=color:#f92672>.</span>w_
+
+    <span style=color:#66d9ef>def</span> <span style=color:#a6e22e>save_model</span>(self):
+        <span style=color:#66d9ef>with</span> open(<span style=color:#e6db74>&#39;a.model&#39;</span>, <span style=color:#e6db74>&#39;w&#39;</span>) <span style=color:#66d9ef>as</span> f:
+            f<span style=color:#f92672>.</span>write(json<span style=color:#f92672>.</span>dumps(self<span style=color:#f92672>.</span>w_<span style=color:#f92672>.</span>tolist()))
+
+    <span style=color:#66d9ef>def</span> <span style=color:#a6e22e>is_fited</span>(self):
+        <span style=color:#66d9ef>return</span> self<span style=color:#f92672>.</span>_fited
+
+    <span style=color:#66d9ef>def</span> <span style=color:#a6e22e>load_model</span>(self):
+        <span style=color:#66d9ef>if</span> os<span style=color:#f92672>.</span>path<span style=color:#f92672>.</span>exists(<span style=color:#e6db74>&#39;a.model&#39;</span>):
+            <span style=color:#66d9ef>with</span> open(<span style=color:#e6db74>&#39;a.model&#39;</span>, <span style=color:#e6db74>&#39;r&#39;</span>, encoding<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;UTF-8&#34;</span>) <span style=color:#66d9ef>as</span> f:
+                data <span style=color:#f92672>=</span> json<span style=color:#f92672>.</span>load(f)
+                self<span style=color:#f92672>.</span>w_ <span style=color:#f92672>=</span> np<span style=color:#f92672>.</span>array(data)
+            <span style=color:#66d9ef>return</span> True
+        <span style=color:#66d9ef>else</span>:
+            <span style=color:#66d9ef>return</span> False
+ 
+
+ 
+file <span style=color:#f92672>=</span> <span style=color:#e6db74>&#39;https://archive.ics.uci.edu/ml/machine-learning-databases/iris/iris.data&#39;</span>
+ 
+df <span style=color:#f92672>=</span> pd<span style=color:#f92672>.</span>read_csv(file,header<span style=color:#f92672>=</span>None)
+<span style=color:#75715e># 输出数据集的前10条数据，形式如下</span>
+<span style=color:#e6db74>&#34;&#34;&#34;
+</span><span style=color:#e6db74>[[5.1 3.5 1.4 0.2 &#39;Iris-setosa&#39;]
+</span><span style=color:#e6db74> [4.9 3.0 1.4 0.2 &#39;Iris-setosa&#39;]
+</span><span style=color:#e6db74> [4.7 3.2 1.3 0.2 &#39;Iris-setosa&#39;]
+</span><span style=color:#e6db74> [4.6 3.1 1.5 0.2 &#39;Iris-setosa&#39;]
+</span><span style=color:#e6db74> [5.0 3.6 1.4 0.2 &#39;Iris-setosa&#39;]
+</span><span style=color:#e6db74> [5.4 3.9 1.7 0.4 &#39;Iris-setosa&#39;]
+</span><span style=color:#e6db74> [4.6 3.4 1.4 0.3 &#39;Iris-setosa&#39;]
+</span><span style=color:#e6db74> [5.0 3.4 1.5 0.2 &#39;Iris-setosa&#39;]
+</span><span style=color:#e6db74> [4.4 2.9 1.4 0.2 &#39;Iris-setosa&#39;]
+</span><span style=color:#e6db74> [4.9 3.1 1.5 0.1 &#39;Iris-setosa&#39;]
+</span><span style=color:#e6db74> [5.4 3.7 1.5 0.2 &#39;Iris-setosa&#39;]]
+</span><span style=color:#e6db74>&#34;&#34;&#34;</span>
+<span style=color:#75715e># print(df.loc[0:10,[0,1,2,3,4]].values)</span>
+
+<span style=color:#75715e># 使用前100行的作为训练样本</span>
+<span style=color:#75715e># type(y) is &lt;class &#39;numpy.ndarray&#39;&gt;</span>
+y <span style=color:#f92672>=</span> df<span style=color:#f92672>.</span>loc[<span style=color:#ae81ff>0</span>:<span style=color:#ae81ff>100</span>,<span style=color:#ae81ff>4</span>]<span style=color:#f92672>.</span>values
+<span style=color:#75715e># 将矩阵中的 string 转换成 1/-1，便于运算</span>
+y <span style=color:#f92672>=</span> np<span style=color:#f92672>.</span>where(y<span style=color:#f92672>==</span><span style=color:#e6db74>&#39;Iris-setosa&#39;</span>, <span style=color:#f92672>-</span><span style=color:#ae81ff>1</span>, <span style=color:#ae81ff>1</span>)
+
+<span style=color:#75715e>#根据整数位置选取单列或单行数据</span>
+<span style=color:#75715e># x 是一个 m*n 的矩阵，其中 m = 100, n = 2, </span>
+<span style=color:#75715e># X11 对应的是数据集中第一行第一列，X12 是数据集中第一行第3列</span>
+X <span style=color:#f92672>=</span> df<span style=color:#f92672>.</span>loc[<span style=color:#ae81ff>0</span>:<span style=color:#ae81ff>100</span>,[<span style=color:#ae81ff>0</span>,<span style=color:#ae81ff>2</span>]]<span style=color:#f92672>.</span>values
+
+<span style=color:#e6db74>&#34;&#34;&#34;
+</span><span style=color:#e6db74># 绘制数据点
+</span><span style=color:#e6db74>plt.scatter(X[:50,0], X[:50,1], color=&#39;red&#39;, marker=&#39;o&#39;, label=&#34;setosa&#34;) 
+</span><span style=color:#e6db74>plt.scatter(X[50:100,0], X[50:100,1], color=&#39;blue&#39;, marker=&#39;x&#39;, label=&#34;versicolor&#34;)
+</span><span style=color:#e6db74>
+</span><span style=color:#e6db74># 设置散点图的坐标和图示
+</span><span style=color:#e6db74>plt.xlabel(&#39;huabanchangdu&#39;)
+</span><span style=color:#e6db74>plt.ylabel(&#39;huajingchangdu&#39;)
+</span><span style=color:#e6db74>plt.legend(loc=&#39;upper left&#39;)
+</span><span style=color:#e6db74>&#34;&#34;&#34;</span>
+
+<span style=color:#75715e># 定义一个神经元，并进行训练</span>
+ppn <span style=color:#f92672>=</span> Perceptron(eta<span style=color:#f92672>=</span><span style=color:#ae81ff>0.1</span>, n_iter<span style=color:#f92672>=</span><span style=color:#ae81ff>100</span>)
+
+<span style=color:#75715e># 如果存在已训练过的模型，则无需重复训练</span>
+<span style=color:#66d9ef>if</span> <span style=color:#f92672>not</span> ppn<span style=color:#f92672>.</span>is_fited():
+    ppn<span style=color:#f92672>.</span>fit(X,y)
+<span style=color:#75715e># print(ppn.get_model())</span>
+
+<span style=color:#75715e># 将训练好的简单神经元作为分类器进行输入的分类</span>
+<span style=color:#66d9ef>def</span> <span style=color:#a6e22e>plot_decision_region</span>(X, y, classifier, resolution <span style=color:#f92672>=</span> <span style=color:#ae81ff>0.02</span>):
+    markers<span style=color:#f92672>=</span>(<span style=color:#e6db74>&#39;s&#39;</span>,<span style=color:#e6db74>&#39;x&#39;</span>,<span style=color:#e6db74>&#39;o&#39;</span>,<span style=color:#e6db74>&#39;v&#39;</span>)
+    colors<span style=color:#f92672>=</span>(<span style=color:#e6db74>&#39;red&#39;</span>,<span style=color:#e6db74>&#39;blue&#39;</span>,<span style=color:#e6db74>&#39;lightgreen&#39;</span>,<span style=color:#e6db74>&#39;gray&#39;</span>,<span style=color:#e6db74>&#39;cyan&#39;</span>)
+    cmap <span style=color:#f92672>=</span> ListedColormap(colors[:len(np<span style=color:#f92672>.</span>unique(y))])
+ 
+    <span style=color:#75715e># 获取矩阵的两列的最小值和最大值</span>
+    x1_min, x1_max <span style=color:#f92672>=</span> X[:, <span style=color:#ae81ff>0</span>]<span style=color:#f92672>.</span>min() <span style=color:#f92672>-</span> <span style=color:#ae81ff>1</span>, X[:, <span style=color:#ae81ff>0</span>]<span style=color:#f92672>.</span>max()
+    x2_min, x2_max <span style=color:#f92672>=</span> X[:, <span style=color:#ae81ff>1</span>]<span style=color:#f92672>.</span>min() <span style=color:#f92672>-</span> <span style=color:#ae81ff>1</span>, X[:, <span style=color:#ae81ff>1</span>]<span style=color:#f92672>.</span>max()
+
+    <span style=color:#75715e># 生成一个二维的矩阵</span>
+    xx1, xx2 <span style=color:#f92672>=</span> np<span style=color:#f92672>.</span>meshgrid(
+                    np<span style=color:#f92672>.</span>arange(x1_min, x1_max, resolution),
+                    np<span style=color:#f92672>.</span>arange(x2_min, x2_max, resolution)
+               )
+    Z <span style=color:#f92672>=</span> classifier<span style=color:#f92672>.</span>predict(np<span style=color:#f92672>.</span>array([xx1<span style=color:#f92672>.</span>ravel(), xx2<span style=color:#f92672>.</span>ravel()])<span style=color:#f92672>.</span>T)
+    <span style=color:#75715e># print (xx1.ravel())</span>
+    <span style=color:#75715e># print (xx2.ravel())</span>
+    <span style=color:#75715e># print (Z)</span>
+    Z <span style=color:#f92672>=</span> Z<span style=color:#f92672>.</span>reshape(xx1<span style=color:#f92672>.</span>shape)
+    plt<span style=color:#f92672>.</span>contourf(xx1, xx2, Z, alpha <span style=color:#f92672>=</span> <span style=color:#ae81ff>0.4</span>, cmap <span style=color:#f92672>=</span> cmap)
+    plt<span style=color:#f92672>.</span>xlim(xx1<span style=color:#f92672>.</span>min(), xx1<span style=color:#f92672>.</span>max())
+    plt<span style=color:#f92672>.</span>ylim(xx2<span style=color:#f92672>.</span>min(), xx2<span style=color:#f92672>.</span>max())
+
+    <span style=color:#66d9ef>for</span> idx, cl <span style=color:#f92672>in</span> enumerate(np<span style=color:#f92672>.</span>unique(y)):
+        plt<span style=color:#f92672>.</span>scatter(x <span style=color:#f92672>=</span> X[y <span style=color:#f92672>==</span> cl, <span style=color:#ae81ff>0</span>], y <span style=color:#f92672>=</span> X[y <span style=color:#f92672>==</span> cl,<span style=color:#ae81ff>1</span>], alpha<span style=color:#f92672>=</span><span style=color:#ae81ff>0.8</span>, 
+                    c <span style=color:#f92672>=</span> cmap(idx), marker <span style=color:#f92672>=</span> markers[idx], label <span style=color:#f92672>=</span> cl)
+
+    plt<span style=color:#f92672>.</span>xlabel(<span style=color:#e6db74>&#39;huajingchang&#39;</span>)
+    plt<span style=color:#f92672>.</span>ylabel(<span style=color:#e6db74>&#39;huabanchang&#39;</span>)
+    plt<span style=color:#f92672>.</span>legend(loc <span style=color:#f92672>=</span> <span style=color:#e6db74>&#39;upper left&#39;</span>)
+    plt<span style=color:#f92672>.</span>show()
+
+<span style=color:#75715e># X = df.iloc[0:100,[0,2]].values</span>
+plot_decision_region(X, y, ppn, resolution <span style=color:#f92672>=</span> <span style=color:#ae81ff>0.03</span>)
+
+</code></pre></div><p>安装完相应的依赖之后，直接运行该源码即可看到分类结果。</p></div></main><script type=application/javascript>var doNotTrack=false;if(!doNotTrack){(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');ga('create','UA-153851706-1','auto');ga('send','pageview');}</script></body></html>
