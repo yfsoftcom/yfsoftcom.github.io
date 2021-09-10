@@ -42,6 +42,7 @@ jobs:
       env:
         token: ${{ secrets.GITHUB_TOKEN }}
       run: |
+        echo "yfsoftcom:$token" && \
         curl \
           -X PUT \
           -u "yfsoftcom:$token" \
