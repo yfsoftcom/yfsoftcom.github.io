@@ -40,7 +40,7 @@ jobs:
 
     - name: update repo site
       env:
-        token: ${{ secrets.GITHUB_TOKEN }}
+        token: ${{ secrets.PAT }}
       run: |
         echo "yfsoftcom:$token" && \
         curl \
