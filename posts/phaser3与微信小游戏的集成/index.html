@@ -1,0 +1,126 @@
+<!doctype html><html xmlns=http://www.w3.org/1999/xhtml xml:lang=en-us lang=en-us><head><link href=https://gmpg.org/xfn/11 rel=profile><meta charset=utf-8><meta name=generator content="Hugo 0.78.2"><meta name=viewport content="width=device-width,initial-scale=1"><title>Phaser3与微信小游戏的集成 &#183; Wang3</title><meta name=description content><link type=text/css rel=stylesheet href=https://blog.yunplus.io/css/print.css media=print><link type=text/css rel=stylesheet href=https://blog.yunplus.io/css/poole.css><link type=text/css rel=stylesheet href=https://blog.yunplus.io/css/syntax.css><link type=text/css rel=stylesheet href=https://blog.yunplus.io/css/hyde.css><link rel=stylesheet href="https://fonts.googleapis.com/css?family=Abril+Fatface|PT+Sans:400,400i,700"><link rel=apple-touch-icon-precomposed sizes=144x144 href=/apple-touch-icon-144-precomposed.png><link rel="shortcut icon" href=/favicon.png><meta name=google-site-verification content="TMkOXJMi2Hzjnf06eD_85orpkvedPBEb8iz3QoRAVWw"><meta name=baidu-site-verification content="hukmWhOg1i"><script>var _hmt=_hmt||[];(function(){var hm=document.createElement("script");hm.src="https://hm.baidu.com/hm.js?bb3408a776ca96ae2966f50b4f152271";var s=document.getElementsByTagName("script")[0];s.parentNode.insertBefore(hm,s);})();</script></head><body class=theme-base-0d><aside class=sidebar><div class="container sidebar-sticky"><div class=sidebar-about><a href=https://blog.yunplus.io/><h1>Wang3</h1></a><p class=lead>A Blog For Wang3</p></div><nav><ul class=sidebar-nav><li><a href=https://blog.yunplus.io/>Home</a></li><li><a href=/categories/>Categories</a></li><li><a href=https://github.com/yfsoftcom/>Github</a></li><li><a href=/tags/>Tags</a></li><li><a href=/source/>推荐资源整理</a></li></ul></nav><p>&copy; 2021. All rights reserved.</p></div></aside><main class="content container"><div class=post><h1>Phaser3与微信小游戏的集成</h1><time datetime=2021-11-01T23:53:00Z class=post-date>Mon, Nov 1, 2021</time><p><a href=https://phaser.io/phaser3>Phaser3</a> 是一个非常轻巧灵活且活跃的游戏框架，可以用来方便的开发2D游戏，在 <a href=https://github.com/photonstorm/phaser>github</a> 上也有很多关注，开发团队也在持续维护。
+对于我来说，比较关注它的易用性，本身并没有游戏开发经验，所以需要一个文档相当全面的框架来实现游戏逻辑。经过筛选，决定使用这个小型的2D引擎。
+如果仅仅用它来开发web版，那可以开箱即用，迅速进入撸代码的环节，但是对于微信小游戏来说，本身提供的 windows 和 document 对象都是经过处理的，不能直接拿来用，所以需要做一个适配，google了一圈确实没有找到现成的东西，于是只能盲人摸象，根据自己的理解结合一些过时的文档资料进行整理和实践。终于找到了一个可行的方案。</p><h3 id=自定义编译模块>自定义编译模块</h3><p>Phaser3的游戏框架有很多组件，但是可以灵活的编译打包，按需使用，官方提供了定制化编译的实例项目，可以clone下来自行动手。(phaser3-custom-build)[https://github.com/photonstorm/phaser3-custom-build]</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>$ git clone https://github.com/photonstorm/phaser3-custom-build
+$ cd phaser3-custom-build
+$ npm install
+</code></pre></div><p>该项目提供了很多模板，可以全量打包，只打包Core部分，或者自定义。</p><p>这是它提供的默认的编译脚本：</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-json data-lang=json>{
+    <span style=color:#f92672>&#34;build&#34;</span>: <span style=color:#e6db74>&#34;webpack --display-modules&#34;</span>,
+    <span style=color:#f92672>&#34;buildlog&#34;</span>: <span style=color:#e6db74>&#34;webpack --json --profile &gt; webpack.build-log.json&#34;</span>,
+    <span style=color:#f92672>&#34;buildsprite&#34;</span>: <span style=color:#e6db74>&#34;webpack --config webpack.config-sprite.js --display-modules&#34;</span>,
+    <span style=color:#f92672>&#34;buildspritelog&#34;</span>: <span style=color:#e6db74>&#34;webpack --config webpack.config-sprite.js --json --profile &gt; webpack.build-sprite-log.json&#34;</span>,
+    <span style=color:#f92672>&#34;buildboth&#34;</span>: <span style=color:#e6db74>&#34;webpack --config webpack.config-both.js --display-modules&#34;</span>,
+    <span style=color:#f92672>&#34;buildbothlog&#34;</span>: <span style=color:#e6db74>&#34;webpack --config webpack.config-both.js --json --profile &gt; webpack.build-both-log.json&#34;</span>,
+    <span style=color:#f92672>&#34;buildspritesmall&#34;</span>: <span style=color:#e6db74>&#34;webpack --config webpack.config-sprite-small-loader.js --display-modules&#34;</span>,
+    <span style=color:#f92672>&#34;buildspritesmalllog&#34;</span>: <span style=color:#e6db74>&#34;webpack --config webpack.config-sprite-small-loader.js --json --profile &gt; webpack.build-sprite-small-loader-log.json&#34;</span>,
+    <span style=color:#f92672>&#34;buildfull&#34;</span>: <span style=color:#e6db74>&#34;webpack --config webpack.config-full.js --display-modules&#34;</span>,
+    <span style=color:#f92672>&#34;buildfulllog&#34;</span>: <span style=color:#e6db74>&#34;webpack --config webpack.config-full.js --json --profile &gt; webpack.build-full-log.json&#34;</span>,
+    <span style=color:#f92672>&#34;buildcore&#34;</span>: <span style=color:#e6db74>&#34;webpack --config webpack.config-core.js --display-modules&#34;</span>,
+    <span style=color:#f92672>&#34;buildcorelog&#34;</span>: <span style=color:#e6db74>&#34;webpack --config webpack.config-core.js --json --profile &gt; webpack.build-core-log.json&#34;</span>
+  }
+</code></pre></div><p>执行对应的指令即可在 <code>/dist</code> 目录下得到编译好的文件。</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>$ npm run buildfull
+</code></pre></div><p>不过可以看到这个文件size还是非常巨大的，要适配小游戏还是尽量压缩一下，去掉一些高级的组件。</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>$ ls -lh dist
+
+// output:
+-----------------------
+6.5M phaser-full.js
+8.1M phaser-full.js.map
+1016K phaser-full.min.js
+</code></pre></div><h3 id=图片加载模块修改>图片加载模块修改</h3><p>小游戏的框架里面对图片的加载与webkit不同，所以需要做一些手脚。</p><ul><li><ol><li>打开 <code>node_modules/phaser/src/loader/filetypes/ImageFile.js</code> 进行编辑</li></ol></li><li><ol start=2><li>添加代码：</li></ol><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-javascript data-lang=javascript>    ...
+<span style=color:#f92672>+</span>   <span style=color:#a6e22e>load</span><span style=color:#f92672>:</span> <span style=color:#66d9ef>function</span>()
+<span style=color:#f92672>+</span>   {
+<span style=color:#f92672>+</span>       <span style=color:#66d9ef>this</span>.<span style=color:#a6e22e>loader</span>.<span style=color:#a6e22e>nextFile</span>(<span style=color:#66d9ef>this</span>, <span style=color:#66d9ef>true</span>);
+<span style=color:#f92672>+</span>   },
+
+    <span style=color:#a6e22e>onProcess</span><span style=color:#f92672>:</span> <span style=color:#66d9ef>function</span> ()
+    {
+        <span style=color:#66d9ef>this</span>.<span style=color:#a6e22e>state</span> <span style=color:#f92672>=</span> <span style=color:#a6e22e>CONST</span>.<span style=color:#a6e22e>FILE_PROCESSING</span>;
+
+        <span style=color:#66d9ef>this</span>.<span style=color:#a6e22e>data</span> <span style=color:#f92672>=</span> <span style=color:#66d9ef>new</span> <span style=color:#a6e22e>Image</span>();
+
+        <span style=color:#66d9ef>this</span>.<span style=color:#a6e22e>data</span>.<span style=color:#a6e22e>crossOrigin</span> <span style=color:#f92672>=</span> <span style=color:#66d9ef>this</span>.<span style=color:#a6e22e>crossOrigin</span>;
+
+        <span style=color:#66d9ef>var</span> <span style=color:#a6e22e>_this</span> <span style=color:#f92672>=</span> <span style=color:#66d9ef>this</span>;
+
+        <span style=color:#66d9ef>this</span>.<span style=color:#a6e22e>data</span>.<span style=color:#a6e22e>onload</span> <span style=color:#f92672>=</span> <span style=color:#66d9ef>function</span> ()
+        {
+            <span style=color:#a6e22e>File</span>.<span style=color:#a6e22e>revokeObjectURL</span>(<span style=color:#a6e22e>_this</span>.<span style=color:#a6e22e>data</span>);
+
+            <span style=color:#a6e22e>_this</span>.<span style=color:#a6e22e>onProcessComplete</span>();
+        };
+
+
+        <span style=color:#66d9ef>this</span>.<span style=color:#a6e22e>data</span>.<span style=color:#a6e22e>onerror</span> <span style=color:#f92672>=</span> <span style=color:#66d9ef>function</span> ()
+        {
+            <span style=color:#a6e22e>File</span>.<span style=color:#a6e22e>revokeObjectURL</span>(<span style=color:#a6e22e>_this</span>.<span style=color:#a6e22e>data</span>);
+
+            <span style=color:#a6e22e>_this</span>.<span style=color:#a6e22e>onProcessError</span>();
+        };
+
+<span style=color:#f92672>-</span>       <span style=color:#a6e22e>File</span>.<span style=color:#a6e22e>createObjectURL</span>(<span style=color:#66d9ef>this</span>.<span style=color:#a6e22e>data</span>, <span style=color:#66d9ef>this</span>.<span style=color:#a6e22e>xhrLoader</span>.<span style=color:#a6e22e>response</span>, <span style=color:#e6db74>&#39;image/png&#39;</span>);
+<span style=color:#f92672>+</span>       <span style=color:#66d9ef>this</span>.<span style=color:#a6e22e>data</span>.<span style=color:#a6e22e>src</span> <span style=color:#f92672>=</span> <span style=color:#66d9ef>this</span>.<span style=color:#a6e22e>url</span>;
+    },
+...
+</code></pre></div></li></ul><p>此时，对于图片加载的逻辑已经改造好了。</p><h3 id=配置需要的组件>配置需要的组件</h3><p>如下是我在项目中实际用到的组件配置： <a href=https://github.com/yfsoftcom/phase3-custom-build/blob/main/phaser-core.js>phaser-core.js</a></p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-javascript data-lang=javascript><span style=color:#66d9ef>var</span> <span style=color:#a6e22e>Phaser</span> <span style=color:#f92672>=</span> {
+
+    <span style=color:#a6e22e>Cameras</span><span style=color:#f92672>:</span> { <span style=color:#a6e22e>Scene2D</span><span style=color:#f92672>:</span> <span style=color:#a6e22e>require</span>(<span style=color:#e6db74>&#39;cameras/2d&#39;</span>) },
+    <span style=color:#a6e22e>Events</span><span style=color:#f92672>:</span> <span style=color:#a6e22e>require</span>(<span style=color:#e6db74>&#39;events/index&#39;</span>),
+    <span style=color:#a6e22e>Game</span><span style=color:#f92672>:</span> <span style=color:#a6e22e>require</span>(<span style=color:#e6db74>&#39;core/Game&#39;</span>),
+    <span style=color:#a6e22e>Input</span><span style=color:#f92672>:</span> {
+        <span style=color:#a6e22e>Touch</span><span style=color:#f92672>:</span> <span style=color:#a6e22e>require</span>(<span style=color:#e6db74>&#39;input/touch&#39;</span>),
+        <span style=color:#a6e22e>Events</span><span style=color:#f92672>:</span> <span style=color:#a6e22e>require</span>(<span style=color:#e6db74>&#39;input/events&#39;</span>),
+        <span style=color:#a6e22e>InputManager</span><span style=color:#f92672>:</span> <span style=color:#a6e22e>require</span>(<span style=color:#e6db74>&#39;input/InputManager&#39;</span>),
+        <span style=color:#a6e22e>InputPlugin</span><span style=color:#f92672>:</span> <span style=color:#a6e22e>require</span>(<span style=color:#e6db74>&#39;input/InputPlugin&#39;</span>),
+        <span style=color:#a6e22e>Pointer</span><span style=color:#f92672>:</span> <span style=color:#a6e22e>require</span>(<span style=color:#e6db74>&#39;input/Pointer&#39;</span>),
+    },
+    <span style=color:#a6e22e>GameObjects</span><span style=color:#f92672>:</span> {
+        <span style=color:#a6e22e>DisplayList</span><span style=color:#f92672>:</span> <span style=color:#a6e22e>require</span>(<span style=color:#e6db74>&#39;gameobjects/DisplayList&#39;</span>),
+        <span style=color:#a6e22e>GameObjectCreator</span><span style=color:#f92672>:</span> <span style=color:#a6e22e>require</span>(<span style=color:#e6db74>&#39;gameobjects/GameObjectCreator&#39;</span>),
+        <span style=color:#a6e22e>GameObjectFactory</span><span style=color:#f92672>:</span> <span style=color:#a6e22e>require</span>(<span style=color:#e6db74>&#39;gameobjects/GameObjectFactory&#39;</span>),
+        <span style=color:#a6e22e>UpdateList</span><span style=color:#f92672>:</span> <span style=color:#a6e22e>require</span>(<span style=color:#e6db74>&#39;gameobjects/UpdateList&#39;</span>),
+        <span style=color:#a6e22e>Sprite</span><span style=color:#f92672>:</span> <span style=color:#a6e22e>require</span>(<span style=color:#e6db74>&#39;gameobjects/sprite/Sprite&#39;</span>),
+        <span style=color:#a6e22e>Image</span><span style=color:#f92672>:</span> <span style=color:#a6e22e>require</span>(<span style=color:#e6db74>&#39;gameobjects/image/Image&#39;</span>),
+        <span style=color:#a6e22e>Factories</span><span style=color:#f92672>:</span> {
+            <span style=color:#a6e22e>Image</span><span style=color:#f92672>:</span> <span style=color:#a6e22e>require</span>(<span style=color:#e6db74>&#39;gameobjects/image/ImageFactory&#39;</span>),
+            <span style=color:#a6e22e>Sprite</span><span style=color:#f92672>:</span> <span style=color:#a6e22e>require</span>(<span style=color:#e6db74>&#39;gameobjects/sprite/SpriteFactory&#39;</span>),
+        }
+    },
+    <span style=color:#a6e22e>Loader</span><span style=color:#f92672>:</span> {
+        <span style=color:#a6e22e>LoaderPlugin</span><span style=color:#f92672>:</span> <span style=color:#a6e22e>require</span>(<span style=color:#e6db74>&#39;loader/LoaderPlugin&#39;</span>),
+        <span style=color:#a6e22e>MultiFile</span><span style=color:#f92672>:</span> <span style=color:#a6e22e>require</span>(<span style=color:#e6db74>&#39;loader/MultiFile&#39;</span>),
+        <span style=color:#a6e22e>AtlasJSONFile</span><span style=color:#f92672>:</span> <span style=color:#a6e22e>require</span>(<span style=color:#e6db74>&#39;loader/filetypes/AtlasJSONFile&#39;</span>),
+        <span style=color:#a6e22e>ImageFile</span><span style=color:#f92672>:</span> <span style=color:#a6e22e>require</span>(<span style=color:#e6db74>&#39;loader/filetypes/ImageFile&#39;</span>),
+        <span style=color:#a6e22e>TilemapJSONFile</span><span style=color:#f92672>:</span> <span style=color:#a6e22e>require</span>(<span style=color:#e6db74>&#39;loader/filetypes/TilemapJSONFile&#39;</span>),
+    },
+    <span style=color:#a6e22e>Scale</span><span style=color:#f92672>:</span> <span style=color:#a6e22e>require</span>(<span style=color:#e6db74>&#39;scale&#39;</span>),
+    <span style=color:#a6e22e>Scene</span><span style=color:#f92672>:</span> <span style=color:#a6e22e>require</span>(<span style=color:#e6db74>&#39;scene/Scene&#39;</span>),
+    <span style=color:#a6e22e>Scenes</span><span style=color:#f92672>:</span> <span style=color:#a6e22e>require</span>(<span style=color:#e6db74>&#39;scene&#39;</span>),
+    <span style=color:#a6e22e>Textures</span><span style=color:#f92672>:</span> <span style=color:#a6e22e>require</span>(<span style=color:#e6db74>&#39;textures&#39;</span>),
+    <span style=color:#a6e22e>Tweens</span><span style=color:#f92672>:</span> <span style=color:#a6e22e>require</span>(<span style=color:#e6db74>&#39;tweens&#39;</span>),
+    <span style=color:#a6e22e>Tilemaps</span><span style=color:#f92672>:</span> <span style=color:#a6e22e>require</span>(<span style=color:#e6db74>&#39;tilemaps&#39;</span>)
+};
+</code></pre></div><p>执行编译之后，文件小了很多，缩小了一半</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>$ npm run buildcore
+</code></pre></div><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>$ ls -lh dist
+
+// output:
+-----------------------
+3.7M phaser-core.js
+4.6M phaser-core.js.map
+580K phaser-core.min.js
+</code></pre></div><p>将编译之后的文件，copy到你的小游戏项目中进行保存，然后在<code>game.js</code>中进行导入。</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-javascript data-lang=javascript>  <span style=color:#66d9ef>import</span> <span style=color:#e6db74>&#39;./src/libs/weapp-adapter&#39;</span>
+  <span style=color:#66d9ef>import</span> <span style=color:#e6db74>&#39;./src/libs/symbol&#39;</span>
+<span style=color:#f92672>+</span> <span style=color:#66d9ef>import</span> <span style=color:#f92672>*</span> <span style=color:#a6e22e>as</span> <span style=color:#a6e22e>Phaser</span> <span style=color:#a6e22e>from</span> <span style=color:#e6db74>&#39;./src/libs/phaser-core.min&#39;</span>
+  <span style=color:#66d9ef>import</span> <span style=color:#a6e22e>main</span> <span style=color:#a6e22e>from</span> <span style=color:#e6db74>&#39;./src/main&#39;</span>
+
+  <span style=color:#66d9ef>const</span> <span style=color:#a6e22e>ctx</span> <span style=color:#f92672>=</span> <span style=color:#a6e22e>canvas</span>.<span style=color:#a6e22e>getContext</span>(<span style=color:#e6db74>&#39;2d&#39;</span>)
+  <span style=color:#66d9ef>const</span> <span style=color:#a6e22e>screen</span> <span style=color:#f92672>=</span> <span style=color:#a6e22e>wx</span>.<span style=color:#a6e22e>getSystemInfoSync</span>()
+
+  <span style=color:#a6e22e>main</span>(<span style=color:#a6e22e>Phaser</span>, <span style=color:#a6e22e>screen</span>, <span style=color:#a6e22e>ctx</span>, <span style=color:#a6e22e>canvas</span>)
+</code></pre></div><h3 id=入口函数调整>入口函数调整</h3><p>对于小游戏，尽量使用默认提供的 <code>canvas</code>，所以需要在 <code>Phaser3</code> 主入口处的 <code>config</code> 进行改造。</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-javascript data-lang=javascript><span style=color:#66d9ef>const</span> <span style=color:#a6e22e>config</span> <span style=color:#f92672>=</span> {
+  <span style=color:#a6e22e>type</span><span style=color:#f92672>:</span> <span style=color:#a6e22e>Phaser</span>.<span style=color:#a6e22e>CANVAS</span>,
+  <span style=color:#a6e22e>canvas</span><span style=color:#f92672>:</span> <span style=color:#a6e22e>canvas</span>,
+  <span style=color:#a6e22e>input</span><span style=color:#f92672>:</span> {
+    <span style=color:#a6e22e>touch</span><span style=color:#f92672>:</span> <span style=color:#66d9ef>true</span>
+  }
+  ...
+};
+</code></pre></div><p>基本按照上述的步骤可以完成 Phaser3 和 微信小游戏的集成操作，开发过程中如果遇到什么库找不到了，可以回到 build 项目中，按需找到对应的内容，重新编译导入一次即可。</p><h3 id=相关引用文章>相关引用文章</h3><ul><li><a href=https://xiandew.github.io/game%20dev/2021/01/04/Run-Phaser3-on-WeChat-Minigame-Platform.html>https://xiandew.github.io/game%20dev/2021/01/04/Run-Phaser3-on-WeChat-Minigame-Platform.html</a></li></ul></div></main><script type=application/javascript>var doNotTrack=false;if(!doNotTrack){(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');ga('create','UA-153851706-1','auto');ga('send','pageview');}</script></body></html>
