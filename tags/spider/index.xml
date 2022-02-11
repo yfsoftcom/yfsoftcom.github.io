@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>spider on Wang3</title><link>https://blog.yunplus.io/tags/spider/</link><description>Recent content in spider on Wang3</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Fri, 11 Feb 2022 10:03:00 +0000</lastBuildDate><atom:link href="https://blog.yunplus.io/tags/spider/index.xml" rel="self" type="application/rss+xml"/><item><title>关于解决类似「大众点评」字体反爬的方法</title><link>https://blog.yunplus.io/posts/%E5%85%B3%E4%BA%8E%E8%A7%A3%E5%86%B3%E7%B1%BB%E4%BC%BC%E5%A4%A7%E4%BC%97%E7%82%B9%E8%AF%84%E5%AD%97%E4%BD%93%E5%8F%8D%E7%88%AC%E7%9A%84%E6%96%B9%E6%B3%95/</link><pubDate>Fri, 11 Feb 2022 10:03:00 +0000</pubDate><guid>https://blog.yunplus.io/posts/%E5%85%B3%E4%BA%8E%E8%A7%A3%E5%86%B3%E7%B1%BB%E4%BC%BC%E5%A4%A7%E4%BC%97%E7%82%B9%E8%AF%84%E5%AD%97%E4%BD%93%E5%8F%8D%E7%88%AC%E7%9A%84%E6%96%B9%E6%B3%95/</guid><description>&lt;blockquote>
+&lt;p>关于解决类似「大众点评」字体反爬的方法&lt;/p>
+&lt;/blockquote>
+&lt;p>反爬虫的常规方式通常包括: IP限流, UA 限制, Cookie 限制等。解决办法也比较常规，通过在 Header 中不断更换伪造的信息或者使用代理IP的方式来隐藏自己的爬虫。&lt;/p>
+&lt;p>不过机智的反爬虫工程师从来没有停止思考，想出了通过字体文件来隐藏数据；&lt;/p>
+&lt;p>大众点评中包含很多商家信息，是一个巨大的数据中心，对于电话和地址这些信息，需要进行反爬；正常用户能看到的信息，通过控制台分析和HTML源码分析得到的却是乱码。&lt;/p></description></item></channel></rss>
