@@ -41,13 +41,13 @@ jobs:
         PUBLISH_BRANCH: public
         PUBLISH_DIR: ./public
 
-    - name: update repo site
-      env:
-        token: ${{ secrets.PAT }}
-      run: |
-        curl \
-          -X PUT \
-          -u "yfsoftcom:$token" \
-          -H "Accept: application/vnd.github.v3+json" \
-          https://api.github.com/repos/yfsoftcom/yfsoftcom.github.io/pages \
-          -d '{"cname":"blog.yunplus.io"}'
+#    - name: update repo site
+#      env:
+#        token: ${{ secrets.PAT }}
+#      run: |
+#        curl \
+#          -X PUT \
+#          -u "yfsoftcom:$token" \
+#          -H "Accept: application/vnd.github.v3+json" \
+#          https://api.github.com/repos/yfsoftcom/yfsoftcom.github.io/pages \
+#          -d '{"cname":"blog.yunplus.io"}'

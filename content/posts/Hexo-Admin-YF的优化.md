@@ -105,7 +105,7 @@ qiniu:
 
 # Credits
 
-built with ❤ by [Wang Fan](http://blog.yfsoft.biz)
-([@yunplus.io](http://blog.yunplus.io)) using
+built with ❤ by [Wang Fan](https://yfsoftcom.github.io)
+([@yunplus.io](https://yfsoftcom.github.io)) using
 [react](http://facebook.github.io/react), [browserify](
 http://browserify.org), and [less](http://lesscss.org).
