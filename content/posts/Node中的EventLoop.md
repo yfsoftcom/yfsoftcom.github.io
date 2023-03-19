@@ -1,13 +1,13 @@
----
-title: Node中的Event Loop
-date: 2023-03-19 09:25:00
-tags: [Node,EventLoop]
----
++++
+title = "Node中的EventLoop"
+date = "2023-03-19T08:37:36Z"
+Description = Node中的EventLoop""
+Tags = ["Node", "EventLoop"]
+Categories = ["Node"]
+menu = "main"
++++
 
-# Node中的Event Loop
-
-> Node.js 借助于V8的加持，在性能方面表现优异，在 single-thread 的基本架构下，可以达到NIO的惊人效果，这里必然存在一个超强的任务处理框架，那就是 Event Loop.
-<!--more-->
+> Node.js 借助于V8的加持，在性能方面表现优异，在 single-thread 的基本架构下，可以达到NIO的惊人效果，这里必然存在一个超强的任务处理框架，那就是 Event Loop. <!--more-->
 
 ### Basic Concepts
 
@@ -26,7 +26,7 @@ tags: [Node,EventLoop]
 
 ### Event Loop Workflow
 
-```jsx
+```bash
    ┌───────────────────────────┐
 ┌─>│           timers          │
 │  └─────────────┬─────────────┘
@@ -66,7 +66,7 @@ setTimeout & setInterval & setImmediate 都属于宏任务；Promise & process.n
 
 ### Example
 
-```jsx
+```javascript
 setTimeout(() => console.log(1));
 Promise.resolve().then(() => console.log(4));
 process.nextTick(() => console.log(3));
