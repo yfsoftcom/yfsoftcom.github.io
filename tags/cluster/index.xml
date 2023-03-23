@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Node on Wang3</title><link>https://yfsoftcom.github.io/categories/node/</link><description>Recent content in Node on Wang3</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Thu, 23 Mar 2023 02:47:19 +0000</lastBuildDate><atom:link href="https://yfsoftcom.github.io/categories/node/index.xml" rel="self" type="application/rss+xml"/><item><title>Node中的Cluster1</title><link>https://yfsoftcom.github.io/posts/node%E4%B8%AD%E7%9A%84cluster/</link><pubDate>Thu, 23 Mar 2023 02:47:19 +0000</pubDate><guid>https://yfsoftcom.github.io/posts/node%E4%B8%AD%E7%9A%84cluster/</guid><description>&lt;blockquote>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Cluster on Wang3</title><link>https://yfsoftcom.github.io/tags/cluster/</link><description>Recent content in Cluster on Wang3</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Thu, 23 Mar 2023 02:47:19 +0000</lastBuildDate><atom:link href="https://yfsoftcom.github.io/tags/cluster/index.xml" rel="self" type="application/rss+xml"/><item><title>Node中的Cluster1</title><link>https://yfsoftcom.github.io/posts/node%E4%B8%AD%E7%9A%84cluster/</link><pubDate>Thu, 23 Mar 2023 02:47:19 +0000</pubDate><guid>https://yfsoftcom.github.io/posts/node%E4%B8%AD%E7%9A%84cluster/</guid><description>&lt;blockquote>
 &lt;p>Node.js 通常采用 Single-threaded 的模式运行，即始终只有一个进程，也就是只能使用到计算机的一颗CPU，因此在选择服务器作为 Node 的运行环境时，CPU的主频是关键，而不是核心的数量。如何能够激发更多的核心参与运算，Cluster模块被设计了出来，使用 IPC 的基本通讯方式，在master进程中fork出若干的worker进程，彼此协调，共同完成任务。这个对于从未接触过分布式的开发者来说非常适合学习和理解。&lt;/p>
 &lt;/blockquote>
 &lt;h3 id="基本概念">基本概念&lt;/h3>
@@ -13,6 +13,4 @@
 &lt;/blockquote>
 &lt;p>除了简单的转发请求之外，master和workers之间也可以进行通讯，相互之间发送指令，限于 master → all workers 以及 worker → master 之间，也就是 worker 之间无法直接通讯，master 也无法单独给某一个 worker 发信息，当然可以通过编码的方式来实现，方案也非常简单。&lt;/p>
 &lt;/li>
-&lt;/ul></description></item><item><title>Node中的EventLoop</title><link>https://yfsoftcom.github.io/posts/node%E4%B8%AD%E7%9A%84eventloop/</link><pubDate>Sun, 19 Mar 2023 08:37:36 +0000</pubDate><guid>https://yfsoftcom.github.io/posts/node%E4%B8%AD%E7%9A%84eventloop/</guid><description>&lt;blockquote>
-&lt;p>Node.js 借助于V8的加持，在性能方面表现优异，在 single-thread 的基本架构下，可以达到NIO的惊人效果，这里必然存在一个超强的任务处理框架，那就是 Event Loop.&lt;/p>
-&lt;/blockquote></description></item></channel></rss>
+&lt;/ul></description></item></channel></rss>

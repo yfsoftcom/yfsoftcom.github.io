@@ -1,4 +1,19 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Posts on Wang3</title><link>https://yfsoftcom.github.io/posts/</link><description>Recent content in Posts on Wang3</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Sun, 19 Mar 2023 08:37:36 +0000</lastBuildDate><atom:link href="https://yfsoftcom.github.io/posts/index.xml" rel="self" type="application/rss+xml"/><item><title>Node中的EventLoop</title><link>https://yfsoftcom.github.io/posts/node%E4%B8%AD%E7%9A%84eventloop/</link><pubDate>Sun, 19 Mar 2023 08:37:36 +0000</pubDate><guid>https://yfsoftcom.github.io/posts/node%E4%B8%AD%E7%9A%84eventloop/</guid><description>&lt;blockquote>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Posts on Wang3</title><link>https://yfsoftcom.github.io/posts/</link><description>Recent content in Posts on Wang3</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Thu, 23 Mar 2023 02:47:19 +0000</lastBuildDate><atom:link href="https://yfsoftcom.github.io/posts/index.xml" rel="self" type="application/rss+xml"/><item><title>Node中的Cluster1</title><link>https://yfsoftcom.github.io/posts/node%E4%B8%AD%E7%9A%84cluster/</link><pubDate>Thu, 23 Mar 2023 02:47:19 +0000</pubDate><guid>https://yfsoftcom.github.io/posts/node%E4%B8%AD%E7%9A%84cluster/</guid><description>&lt;blockquote>
+&lt;p>Node.js 通常采用 Single-threaded 的模式运行，即始终只有一个进程，也就是只能使用到计算机的一颗CPU，因此在选择服务器作为 Node 的运行环境时，CPU的主频是关键，而不是核心的数量。如何能够激发更多的核心参与运算，Cluster模块被设计了出来，使用 IPC 的基本通讯方式，在master进程中fork出若干的worker进程，彼此协调，共同完成任务。这个对于从未接触过分布式的开发者来说非常适合学习和理解。&lt;/p>
+&lt;/blockquote>
+&lt;h3 id="基本概念">基本概念&lt;/h3>
+&lt;ul>
+&lt;li>
+&lt;p>&lt;code>IPC&lt;/code> (Inter-Process Communication) 一种非常通用的多进程通讯方式，可以实现不同程序之间的协作，举个简单的例子：&lt;code>cat ~/foo.txt | grep bar&lt;/code> 这样一个简单的linux指令就是一次 IPC 通信，中间的管道符用于将前面的程序的输出作为输入给到后面的程序，&lt;code>cat&lt;/code> 和 &lt;code>grep&lt;/code> 就是2个独立的进程。由此可见，现代计算机中普遍使用IPC，只是我们尚未察觉。不过IPC只限于一台机器内部通讯，区别于传统意义上的分布式。&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Node中的Cluster可以监听本地的一个端口，并将请求转发到不同的 worker 内进行处理，每一个worker都是一个独立的进程，可以享用单独的CPU，在资源不够的情况下也会根其它的worker进程共享。Master进程内部有一个简单的负载机制，可以通过轮询或者饥饿模式（不知这么翻译是否妥当？）下面有原文的引用：&lt;/p>
+&lt;blockquote>
+&lt;p>The cluster module supports two methods of distributing incoming connections. The first one (and the default one on all platforms except Windows) is the round-robin approach, where the primary process listens on a port, accepts new connections and distributes them across the workers in a round-robin fashion, with some built-in smarts to avoid overloading a worker process. The second approach is where the primary process creates the listen socket and sends it to interested workers. The workers then accept incoming connections directly.&lt;/p>
+&lt;/blockquote>
+&lt;p>除了简单的转发请求之外，master和workers之间也可以进行通讯，相互之间发送指令，限于 master → all workers 以及 worker → master 之间，也就是 worker 之间无法直接通讯，master 也无法单独给某一个 worker 发信息，当然可以通过编码的方式来实现，方案也非常简单。&lt;/p>
+&lt;/li>
+&lt;/ul></description></item><item><title>Node中的EventLoop</title><link>https://yfsoftcom.github.io/posts/node%E4%B8%AD%E7%9A%84eventloop/</link><pubDate>Sun, 19 Mar 2023 08:37:36 +0000</pubDate><guid>https://yfsoftcom.github.io/posts/node%E4%B8%AD%E7%9A%84eventloop/</guid><description>&lt;blockquote>
 &lt;p>Node.js 借助于V8的加持，在性能方面表现优异，在 single-thread 的基本架构下，可以达到NIO的惊人效果，这里必然存在一个超强的任务处理框架，那就是 Event Loop.&lt;/p>
 &lt;/blockquote></description></item><item><title>Node中的OOM</title><link>https://yfsoftcom.github.io/posts/node%E4%B8%AD%E7%9A%84oom/</link><pubDate>Mon, 06 Mar 2023 09:25:00 +0000</pubDate><guid>https://yfsoftcom.github.io/posts/node%E4%B8%AD%E7%9A%84oom/</guid><description>&lt;blockquote>
 &lt;p>Node.js 中的内存管理和垃圾回收是怎样的? 如何解决内存溢出的问题,以及如何找出导致OOM的根因?&lt;/p>

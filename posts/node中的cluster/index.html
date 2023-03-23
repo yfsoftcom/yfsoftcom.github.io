@@ -1,0 +1,81 @@
+<!doctype html><html xmlns=http://www.w3.org/1999/xhtml xml:lang=en-us lang=en-us><head><link href=https://gmpg.org/xfn/11 rel=profile><meta charset=utf-8><meta name=generator content="Hugo 0.78.2"><meta name=viewport content="width=device-width,initial-scale=1"><title>Node中的Cluster1 &#183; Wang3</title><meta name=description content="Node中的Cluster"><meta property="og:title" content="Node中的Cluster1"><link type=text/css rel=stylesheet href=https://yfsoftcom.github.io/css/print.css media=print><link type=text/css rel=stylesheet href=https://yfsoftcom.github.io/css/poole.css><link type=text/css rel=stylesheet href=https://yfsoftcom.github.io/css/syntax.css><link type=text/css rel=stylesheet href=https://yfsoftcom.github.io/css/hyde.css><link rel=stylesheet href="https://fonts.googleapis.com/css?family=Abril+Fatface|PT+Sans:400,400i,700"><link rel=apple-touch-icon-precomposed sizes=144x144 href=/apple-touch-icon-144-precomposed.png><link rel="shortcut icon" href=/favicon.png><meta name=google-site-verification content="TMkOXJMi2Hzjnf06eD_85orpkvedPBEb8iz3QoRAVWw"><meta name=baidu-site-verification content="hukmWhOg1i"><script>var _hmt=_hmt||[];(function(){var hm=document.createElement("script");hm.src="https://hm.baidu.com/hm.js?bb3408a776ca96ae2966f50b4f152271";var s=document.getElementsByTagName("script")[0];s.parentNode.insertBefore(hm,s);})();</script></head><body class=theme-base-0d><aside class=sidebar><div class="container sidebar-sticky"><div class=sidebar-about><a href=https://yfsoftcom.github.io/><h1>Wang3</h1></a><p class=lead>A Blog For Wang3</p></div><nav><ul class=sidebar-nav><li><a href=https://yfsoftcom.github.io/>Home</a></li><li><a href=/categories/>Categories</a></li><li><a href=https://github.com/yfsoftcom/>Github</a></li><li><a href=/posts/node%E4%B8%AD%E7%9A%84eventloop/>Node中的EventLoop</a></li><li><a href=/tags/>Tags</a></li><li><a href=/source/>推荐资源整理</a></li></ul></nav><p>&copy; 2023. All rights reserved.</p></div></aside><main class="content container"><div class=post><h1>Node中的Cluster1</h1><time datetime=2023-03-23T02:47:19Z class=post-date>Thu, Mar 23, 2023</time><blockquote><p>Node.js 通常采用 Single-threaded 的模式运行，即始终只有一个进程，也就是只能使用到计算机的一颗CPU，因此在选择服务器作为 Node 的运行环境时，CPU的主频是关键，而不是核心的数量。如何能够激发更多的核心参与运算，Cluster模块被设计了出来，使用 IPC 的基本通讯方式，在master进程中fork出若干的worker进程，彼此协调，共同完成任务。这个对于从未接触过分布式的开发者来说非常适合学习和理解。</p></blockquote><h3 id=基本概念>基本概念</h3><ul><li><p><code>IPC</code> (Inter-Process Communication) 一种非常通用的多进程通讯方式，可以实现不同程序之间的协作，举个简单的例子：<code>cat ~/foo.txt | grep bar</code> 这样一个简单的linux指令就是一次 IPC 通信，中间的管道符用于将前面的程序的输出作为输入给到后面的程序，<code>cat</code> 和 <code>grep</code> 就是2个独立的进程。由此可见，现代计算机中普遍使用IPC，只是我们尚未察觉。不过IPC只限于一台机器内部通讯，区别于传统意义上的分布式。</p></li><li><p>Node中的Cluster可以监听本地的一个端口，并将请求转发到不同的 worker 内进行处理，每一个worker都是一个独立的进程，可以享用单独的CPU，在资源不够的情况下也会根其它的worker进程共享。Master进程内部有一个简单的负载机制，可以通过轮询或者饥饿模式（不知这么翻译是否妥当？）下面有原文的引用：</p><blockquote><p>The cluster module supports two methods of distributing incoming connections. The first one (and the default one on all platforms except Windows) is the round-robin approach, where the primary process listens on a port, accepts new connections and distributes them across the workers in a round-robin fashion, with some built-in smarts to avoid overloading a worker process. The second approach is where the primary process creates the listen socket and sends it to interested workers. The workers then accept incoming connections directly.</p></blockquote><p>除了简单的转发请求之外，master和workers之间也可以进行通讯，相互之间发送指令，限于 master → all workers 以及 worker → master 之间，也就是 worker 之间无法直接通讯，master 也无法单独给某一个 worker 发信息，当然可以通过编码的方式来实现，方案也非常简单。</p></li></ul><h3 id=深入思考>深入<strong>思考</strong></h3><ul><li>如果cluster的worker进程挂了会怎么样？会自动重启嘛？master进程挂了又会怎么样呢？</li><li>对应的传统的分布式算法又是如何解决这个问题的？比如：<code>zookeeper</code>，<code>etcd</code></li><li>如果请求的负载非常不平均，该如何更好的协调worker之间的load？比如第一个请求包含了1w次的浮点运算，第二个请求只有1次整数运算，2个worker之间的工作量极度不平衡，后面的请求分配到一个overload的worker会出现什么情况？</li><li>优秀的负载均衡是如何做到的？</li></ul><h3 id=猜想实验>猜想实验</h3><ul><li>创建一个http服务接受请求，输出worker信息（进程编号），连续发多次请求，查看输出结果，如果workerID按顺序交替输出，则采用了轮训模式。</li><li>运行之后，查看CPU的负载，如果每个CPU都有负载说明确实运用到了多核算力。</li></ul><h3 id=动手操作>动手操作</h3><ul><li><p>创建测试代码：（该代码片段来自官网）</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>const cluster <span style=color:#f92672>=</span> require<span style=color:#f92672>(</span><span style=color:#e6db74>&#39;node:cluster&#39;</span><span style=color:#f92672>)</span>;
+const http <span style=color:#f92672>=</span> require<span style=color:#f92672>(</span><span style=color:#e6db74>&#39;node:http&#39;</span><span style=color:#f92672>)</span>;
+const numCPUs <span style=color:#f92672>=</span> require<span style=color:#f92672>(</span><span style=color:#e6db74>&#39;node:os&#39;</span><span style=color:#f92672>)</span>.cpus<span style=color:#f92672>()</span>.length;
+const process <span style=color:#f92672>=</span> require<span style=color:#f92672>(</span><span style=color:#e6db74>&#39;node:process&#39;</span><span style=color:#f92672>)</span>;
+  
+<span style=color:#66d9ef>if</span> <span style=color:#f92672>(</span>cluster.isPrimary<span style=color:#f92672>)</span> <span style=color:#f92672>{</span>
+  console.log<span style=color:#f92672>(</span><span style=color:#e6db74>`</span>Primary <span style=color:#e6db74>${</span>process.pid<span style=color:#e6db74>}</span> is running<span style=color:#e6db74>`</span><span style=color:#f92672>)</span>;
+  
+  // Fork workers.
+  <span style=color:#66d9ef>for</span> <span style=color:#f92672>(</span>let i <span style=color:#f92672>=</span> 0; i &lt; numCPUs; i++<span style=color:#f92672>)</span> <span style=color:#f92672>{</span>
+    cluster.fork<span style=color:#f92672>()</span>;
+  <span style=color:#f92672>}</span>
+  
+  cluster.on<span style=color:#f92672>(</span><span style=color:#e6db74>&#39;exit&#39;</span>, <span style=color:#f92672>(</span>worker, code, signal<span style=color:#f92672>)</span> <span style=color:#f92672>=</span>&gt; <span style=color:#f92672>{</span>
+    console.log<span style=color:#f92672>(</span><span style=color:#e6db74>`</span>worker <span style=color:#e6db74>${</span>worker.process.pid<span style=color:#e6db74>}</span> died! signal: <span style=color:#e6db74>${</span>signal<span style=color:#e6db74>}</span><span style=color:#e6db74>`</span><span style=color:#f92672>)</span>;
+    // 这里是监听worker退出事件的，如果重新 fork 可以自动重启，但会产生一个新的 worker，而不是启动原来的
+    // 并且，重新生成的worker会随机的插入到原来的队列
+    cluster.fork<span style=color:#f92672>()</span>;
+  <span style=color:#f92672>})</span>;
+<span style=color:#f92672>}</span> <span style=color:#66d9ef>else</span> <span style=color:#f92672>{</span>
+  // Workers can share any TCP connection
+  // In this <span style=color:#66d9ef>case</span> it is an HTTP server
+  http.createServer<span style=color:#f92672>((</span>req, res<span style=color:#f92672>)</span> <span style=color:#f92672>=</span>&gt; <span style=color:#f92672>{</span>
+    res.writeHead<span style=color:#f92672>(</span>200<span style=color:#f92672>)</span>;
+    res.end<span style=color:#f92672>(</span><span style=color:#e6db74>`</span>response from worker: <span style=color:#e6db74>${</span>process.pid<span style=color:#e6db74>}</span><span style=color:#ae81ff>\n</span><span style=color:#e6db74>`</span><span style=color:#f92672>)</span>;
+  <span style=color:#f92672>})</span>.listen<span style=color:#f92672>(</span>8000<span style=color:#f92672>)</span>;
+  
+  console.log<span style=color:#f92672>(</span><span style=color:#e6db74>`</span>Worker <span style=color:#e6db74>${</span>process.pid<span style=color:#e6db74>}</span> started<span style=color:#e6db74>`</span><span style=color:#f92672>)</span>;
+<span style=color:#f92672>}</span>
+</code></pre></div></li><li><p>Case1: 依次发送请求，查看workerId是否顺序的</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=color:#75715e># 启动之后的输出，其中的ID是顺序的</span>
+Primary <span style=color:#ae81ff>27997</span> is running
+Worker <span style=color:#ae81ff>27998</span> started
+Worker <span style=color:#ae81ff>27999</span> started
+Worker <span style=color:#ae81ff>28000</span> started
+Worker <span style=color:#ae81ff>28001</span> started
+Worker <span style=color:#ae81ff>28002</span> started
+Worker <span style=color:#ae81ff>28003</span> started
+Worker <span style=color:#ae81ff>28004</span> started
+Worker <span style=color:#ae81ff>28005</span> started
+  
+<span style=color:#75715e># 发送http请求查看响应</span>
+<span style=color:#75715e># 使用 for 循环连续发送 20 个请求，发现响应的输出 ID 也是按照启动的顺序连续的</span>
+<span style=color:#75715e># 由此可以推断，master的分配是轮训的机制</span>
+➜  ~ <span style=color:#66d9ef>for</span> i in <span style=color:#f92672>{</span>1..20<span style=color:#f92672>}</span>
+<span style=color:#66d9ef>do</span>
+curl localhost:8000
+<span style=color:#66d9ef>done</span>
+response from worker: <span style=color:#ae81ff>28004</span>
+response from worker: <span style=color:#ae81ff>28005</span>
+response from worker: <span style=color:#ae81ff>27998</span>
+response from worker: <span style=color:#ae81ff>27999</span>
+response from worker: <span style=color:#ae81ff>28000</span>
+response from worker: <span style=color:#ae81ff>28001</span>
+response from worker: <span style=color:#ae81ff>28002</span>
+response from worker: <span style=color:#ae81ff>28003</span>
+response from worker: <span style=color:#ae81ff>28004</span>
+response from worker: <span style=color:#ae81ff>28005</span>
+response from worker: <span style=color:#ae81ff>27998</span>
+response from worker: <span style=color:#ae81ff>27999</span>
+response from worker: <span style=color:#ae81ff>28000</span>
+response from worker: <span style=color:#ae81ff>28001</span>
+response from worker: <span style=color:#ae81ff>28002</span>
+response from worker: <span style=color:#ae81ff>28003</span>
+response from worker: <span style=color:#ae81ff>28004</span>
+response from worker: <span style=color:#ae81ff>28005</span>
+response from worker: <span style=color:#ae81ff>27998</span>
+response from worker: <span style=color:#ae81ff>27999</span>
+</code></pre></div></li><li><p>Case 2: 通过 kill 命令关闭了worker进程</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>Primary <span style=color:#ae81ff>28494</span> is running
+Worker <span style=color:#ae81ff>28495</span> started
+Worker <span style=color:#ae81ff>28496</span> started
+Worker <span style=color:#ae81ff>28497</span> started
+Worker <span style=color:#ae81ff>28498</span> started
+Worker <span style=color:#ae81ff>28499</span> started
+Worker <span style=color:#ae81ff>28501</span> started
+Worker <span style=color:#ae81ff>28500</span> started
+Worker <span style=color:#ae81ff>28502</span> started
+worker <span style=color:#ae81ff>28500</span> died! signal: SIGTERM   <span style=color:#75715e># kill 28500 ，获得 SIGTERM 信号</span>
+Worker <span style=color:#ae81ff>28532</span> started                 <span style=color:#75715e># 重新 fork 了一个新的 worker</span>
+worker <span style=color:#ae81ff>28499</span> died! signal: SIGKILL   <span style=color:#75715e># kill -9 28499 ，获得 SIGKILL 信号，强制退出</span>
+Worker <span style=color:#ae81ff>28561</span> started
+</code></pre></div><p>总的来说，worker可以emit对应的退出事件，通过处理可以完成重启并自动添加到worker队列，但是如果 master 进程关闭了，整个程序都退出了。</p></li></ul><h3 id=总结归纳>总结归纳</h3><ul><li>Cluster模块封装了一个简单的IPC实现的水平扩展和流量分发以更高效的运用CPU的多核心能力，但master进程没有得到保护，虽然启动了多实例，但是没有保活能力。</li><li>其流量分发的逻辑也非常简单，一次轮训，可以深入学习一下，是否可以修改其算法（作为思考题）</li><li><code>pm2</code> 模块是一个借助 cluster 方便的部署多实例 node 服务的开源项目，可参考阅读，当然不止 node 任何可运行的网络服务都可以用它去运行。</li><li>本文没有深入的使用压力测试，查看CPU的负载，如果需要，可以通过 loadtest(类似于apache ab测试工具) 进行动手实验。</li></ul><h3 id=扩展阅读>扩展阅读</h3><ul><li><a href=https://nodejs.org/api/cluster.html>https://nodejs.org/api/cluster.html</a></li><li><a href=https://github.com/Unitech/pm2>https://github.com/Unitech/pm2</a></li><li><a href=https://github.com/alexfernandez/loadtest>https://github.com/alexfernandez/loadtest</a></li></ul></div><h2>Comments</h2><script src=https://giscus.app/client.js data-repo=yfsoftcom/yfsoftcom.github.io data-repo-id="MDEwOlJlcG9zaXRvcnk2NDUzNDEzMw==" data-category=General data-category-id=DIC_kwDOA9i2dc4CQcP9 data-mapping=og:title data-strict=0 data-reactions-enabled=1 data-emit-metadata=0 data-input-position=bottom data-theme=light data-lang=zh-CN crossorigin=anonymous async></script></main><script type=application/javascript>var doNotTrack=false;if(!doNotTrack){(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');ga('create','UA-153851706-1','auto');ga('send','pageview');}</script></body></html>
