@@ -1,11 +1,10 @@
-+++
-title = "Node中的Cluster"
-date = "2023-03-23T08:37:36Z"
-Description = "Node中的Cluster"
-Tags = ["Node", "Cluster"]
-Categories = ["Node"]
-menu = "main"
-+++
+---
+title: "Node中的Cluster1"
+date: 2023-03-23T02:47:19Z
+Description: "Node中的Cluster"
+Tags: ["Node", "Cluster"]
+Categories: ["Node"]
+---
 
 > Node.js 通常采用 Single-threaded 的模式运行，即始终只有一个进程，也就是只能使用到计算机的一颗CPU，因此在选择服务器作为 Node 的运行环境时，CPU的主频是关键，而不是核心的数量。如何能够激发更多的核心参与运算，Cluster模块被设计了出来，使用 IPC 的基本通讯方式，在master进程中fork出若干的worker进程，彼此协调，共同完成任务。这个对于从未接触过分布式的开发者来说非常适合学习和理解。
 > 

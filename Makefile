@@ -8,3 +8,9 @@ local:
 		-p 1313:1313 \
   	-v $(shell pwd):/src \
   	klakegg/hugo:0.74.3 server -D
+
+new-post:
+	docker run --rm -it \
+		-p 1313:1313 \
+  	-v $(shell pwd):/src \
+  	klakegg/hugo:0.74.3 new posts/$(name).md
